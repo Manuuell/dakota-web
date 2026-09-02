@@ -17,12 +17,6 @@
     "duracion": 7,
     "alt": "Una burger de Dakota ante las llamas del horno Josper mientras cae el queso fundido"
   },
-  "/video/salon": {
-    "w": 900,
-    "h": 462,
-    "duracion": 3.3,
-    "alt": "Plano general del salón de Dakota con las mesas ocupadas y las luminarias del techo encendidas"
-  },
   "/video/mesa-noche": {
     "w": 640,
     "h": 1138,

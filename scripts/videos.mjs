@@ -47,21 +47,6 @@ const CLIPS = [
     alt: "Una burger de Dakota ante las llamas del horno Josper mientras cae el queso fundido",
   },
   {
-    // Plano general del salon, del reel de la apertura. Dos problemas del
-    // material: subtitulos quemados a media altura y un corte de plano a los
-    // 10,8 s. El recorte deja el texto fuera del cuadro y la camara lenta
-    // estira los 1,9 s utiles a casi cuatro, para que el bucle no salte.
-    src: "DZqC8WvxX5L.mp4",
-    out: "salon",
-    desde: 9.0,
-    // Ojo: duracion es la de SALIDA. Con lento:2 consume la mitad de origen.
-    duracion: 3.3,
-    recorte: "720:370:0:355",
-    lento: 2,
-    ancho: 900,
-    alt: "Plano general del salón de Dakota con las mesas ocupadas y las luminarias del techo encendidas",
-  },
-  {
     src: "DaCO1f1Mgf2.mp4",
     out: "mesa-noche",
     desde: 4,

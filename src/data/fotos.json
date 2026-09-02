@@ -26,16 +26,17 @@
       "pie": "Desmechado al Josper"
     },
     {
-      "src": "/img/hotdogs/hot-dog-urban",
+      "src": "/img/producto/portada-ancha",
       "widths": [
-        400,
-        800
+        800,
+        1200,
+        1600
       ],
       "ratio": "16 / 9",
       "ancha": true,
-      "alt": "Hot Dog Urban coronado con queso rallado y salsas de la casa",
-      "titulo": "Hot Dog Urban",
-      "pie": "Edicion de temporada"
+      "alt": "Burger Dakota sostenida en dos manos, con pulled pork, tocineta, cheddar y salsa de la casa",
+      "titulo": "En dos manos",
+      "pie": "Como llega a la mesa"
     },
     {
       "src": "/img/burgers/the-chief-b",
@@ -137,6 +138,15 @@
       ],
       "alt": "Getsemaní en mano",
       "titulo": "El corte"
+    },
+    {
+      "src": "/img/hotdogs/hot-dog-urban",
+      "widths": [
+        400,
+        800
+      ],
+      "alt": "Hot Dog Urban",
+      "titulo": "Hot Dog Urban"
     }
   ]
 }

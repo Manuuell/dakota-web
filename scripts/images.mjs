@@ -42,6 +42,7 @@ const COMPLETAS = [
   { src: "menu/papas.png",         out: "cat/papas", alfa: true },
   { src: "menu/salsas.png",        out: "cat/salsas", alfa: true, anchos: [400, 800, 1200] },
   { src: "menu/portada-burger.jpg", out: "cat/entradas", crop: { left: 380, top: 1500, width: 1900, height: 1900 }, anchos: [400, 800, 1200] },
+  { src: "menu/portada-burger.jpg", out: "producto/portada-ancha", crop: { left: 0, top: 1370, width: 2600, height: 1463 }, anchos: [800, 1200, 1600] },
   { src: "menu/portada-burger.jpg", out: "og/portada",   crop: { left: 120, top: 1750, width: 2360, height: 1239 }, anchos: [1200] },
 
   // Fotografía de @dakota.ctg: producto, parrilla, local y clientes.
@@ -49,9 +50,7 @@ const COMPLETAS = [
   { src: "ig/DXPQFELEb4A.jpg", out: "producto/pulled-pork",   anchos: [400, 800, 1200] },
   { src: "ig/DbYSdq_Roo7.jpg", out: "producto/burger-mano",   anchos: [400, 800] },
   { src: "ig/DZ0mz2lRYuj.jpg", out: "producto/jugosa",        anchos: [400, 800] },
-  { src: "ig/Db80m9ERZGw.jpg", out: "local/parrilla",         anchos: [400, 800, 1200] },
   { src: "ig/DZtQRV8sqhU.jpg", out: "local/neon",             anchos: [400, 800] },
-  { src: "ig/DatnWKaMl81.jpg", out: "local/fachada",          anchos: [400, 800] },
   { src: "ig/DZqC8WvxX5L.jpg", out: "clientes/c1",            anchos: [400, 800] },
   { src: "ig/DZxxKwPxAnG.jpg", out: "clientes/c2",            anchos: [400, 800] },
   { src: "ig/DaO9os3lIox.jpg", out: "clientes/c3",            anchos: [400, 800] },

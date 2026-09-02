@@ -54,6 +54,11 @@
     800,
     1200
   ],
+  "/img/producto/portada-ancha": [
+    800,
+    1200,
+    1600
+  ],
   "/img/og/portada": [
     1200
   ],
@@ -73,17 +78,9 @@
   "/img/producto/jugosa": [
     400
   ],
-  "/img/local/parrilla": [
-    400,
-    800,
-    1200
-  ],
   "/img/local/neon": [
     400,
     800
-  ],
-  "/img/local/fachada": [
-    400
   ],
   "/img/clientes/c1": [
     400,
