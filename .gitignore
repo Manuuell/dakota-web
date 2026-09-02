@@ -1,0 +1,11 @@
+node_modules
+node_modules.nosync
+dist/
+.astro/
+.DS_Store
+*.log
+.env
+
+# material de trabajo
+.claude/
+assets/raw/**/sm-*
