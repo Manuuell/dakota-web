@@ -1,0 +1,331 @@
+{
+  "moneda": "COP",
+  "actualizado": "2026-06-14",
+  "fuente": "MENU DAKOTAcc 2026.pdf",
+  "categorias": [
+    {
+      "id": "entradas",
+      "nombre": "Entradas",
+      "script": "para empezar",
+      "productos": [
+        {
+          "id": "papitas-dakota",
+          "nombre": "Papitas Dakota",
+          "precio": 21500,
+          "desc": "La bienvenida ideal. Una torre de papitas ultra crujientes bañadas en tártara de la casa, salsa rosada ahumada y dulce de piña artesanal, coronadas con una lluvia de queso nevado."
+        },
+        {
+          "id": "dakota-crunchy",
+          "nombre": "Dakota Crunchy",
+          "precio": 25000,
+          "desc": "Para compartir: 4 aros de cebolla extra crujientes, 3 dedos de mozzarella premium y 3 dedos salados artesanales, con nuestra adictiva salsa secreta estilo Chick-fil-A."
+        },
+        {
+          "id": "fries-lab",
+          "nombre": "Fries Lab",
+          "precio": 30000,
+          "desc": "Una montaña de papa a la francesa extra crujiente coronada con pulled pork ahumado, cascada de cheddar fundido, hilos de crema agria Klarens, tocineta premium picada y cebollino fresco."
+        },
+        {
+          "id": "pork-bites",
+          "nombre": "Pork Bites",
+          "precio": 37000,
+          "desc": "Panceta de chicharrón extra crujiente bañada en salsa acevichada, sobre cama de chips de plátano, con hilos de suero de chipotle y nevada de queso costeño rallado."
+        }
+      ],
+      "foto": {
+        "src": "/img/cat/entradas",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "ratio": "1 / 1",
+        "alt": "Burger Dakota sostenida en mano frente al letrero de neón del local",
+        "fondo": "foto"
+      }
+    },
+    {
+      "id": "burgers",
+      "nombre": "Burgers",
+      "script": "de la parrilla",
+      "dobleprecio": true,
+      "productos": [
+        {
+          "id": "american",
+          "nombre": "American Burger",
+          "precio": 26500,
+          "precioPapa": 34500,
+          "desc": "Jugosa carne premium cobijada por doble queso cheddar y tocineta ahumada crocante. Tomate milano, lechuga crespa, pepinillos y la salsa secreta de la casa en pan pretzel artesanal."
+        },
+        {
+          "id": "the-boss",
+          "nombre": "The Boss",
+          "precio": 26500,
+          "precioPapa": 34500,
+          "chef": true,
+          "desc": "La máxima expresión de la barbacoa americana. Carne premium con pulled pork bañado en su salsa, cheddar fundido, bacon jam de la casa, tomate rojo y pepinillos en pan pretzel dorado."
+        },
+        {
+          "id": "smoky",
+          "nombre": "Smoky",
+          "precio": 30000,
+          "precioPapa": 38000,
+          "desc": "150 g de carne premium sellada al carbón en el horno Josper, coronada con costilla de cerdo desmechada en BBQ artesanal de guayaba, tomate milano, bits de tocineta hipercrocante y cebolla crispy sobre pan pretzel."
+        },
+        {
+          "id": "getsemani",
+          "nombre": "Getsemaní",
+          "precio": 31500,
+          "precioPapa": 39500,
+          "desc": "Homenaje al barrio más alegre de Cartagena. Carne premium de 150 g abrazada por mozzarella fundido, arepa blanca crocante, pollo desmechado en tártara artesanal y tocineta premium."
+        },
+        {
+          "id": "honolulu-fire",
+          "nombre": "Honolulu Fire",
+          "precio": 33500,
+          "precioPapa": 41500,
+          "picante": true,
+          "desc": "Pan pretzel tostado en mantequilla, 150 g de carne premium, mozzarella derretido, cebolla asada, bloque de queso costeño apanado y frito, tocineta y piña asada glaseada en almíbar de miel."
+        },
+        {
+          "id": "the-chief",
+          "nombre": "The Chief",
+          "precio": 34000,
+          "precioPapa": 42000,
+          "doble": true,
+          "desc": "Doble carne premium fundida en cheddar, mermelada artesanal de chorizo, queso Philadelphia y aros de cebolla al panko. Sobre cama de rúcula y tártara de la casa en pan brioche artesanal."
+        },
+        {
+          "id": "cowboy",
+          "nombre": "Cowboy",
+          "precio": 34500,
+          "precioPapa": 42500,
+          "doble": true,
+          "desc": "Doble carne premium con cheddar, mermelada artesanal de frutos rojos y queso Philadelphia. Tocineta apanada ultra crocante, cebolla crispy, rúcula, pepinillos agridulces y salsa Chick-fil-A."
+        },
+        {
+          "id": "suprema",
+          "nombre": "Suprema",
+          "precio": 35000,
+          "precioPapa": 43000,
+          "desc": "Tradición santandereana: carne de res rellena con pollo y cerdo, queso salado y crujiente del apanado, tocineta ahumada y cebolla reducida en Kola, en pan pretzel de la casa."
+        },
+        {
+          "id": "cheese-and-bacon",
+          "nombre": "Cheese and Bacon",
+          "precio": 35500,
+          "precioPapa": 43500,
+          "doble": true,
+          "desc": "Dos jugosas carnes de res premium con doble cheddar fundido y tocineta deshidratada ultra crujiente. Pan pretzel sellado en mantequilla, salsa de la casa, cebolla asada y pepinillos dulces Heinz."
+        },
+        {
+          "id": "the-big-dakota",
+          "nombre": "The Big Dakota",
+          "precio": 37500,
+          "precioPapa": 42500,
+          "estrella": true,
+          "desc": "La reina de la casa. Trilogía de proteínas: carne premium, cheddar fundido y chorizo parrillero en mariposa. Segundo piso de mozzarella con milanesa de pollo apanada, en pan pretzel dorado en mantequilla, con salsa gaucha y Chick-fil-A."
+        },
+        {
+          "id": "la-fantastica",
+          "nombre": "La Fantástica",
+          "precio": 40000,
+          "precioPapa": 48000,
+          "doble": true,
+          "desc": "El homenaje de Dakota a La Heroica. Doble carne premium con cheddar, queso costeño asado, maduro frito, panceta ahumada y cebolla crispy, bañada en suero costeño y almíbar de miel."
+        },
+        {
+          "id": "maverick",
+          "nombre": "Maverick",
+          "precio": 41000,
+          "precioPapa": 49000,
+          "picante": true,
+          "desc": "Carne de res seleccionada con el ahumado del Josper, mix de quesos fundidos y chorizo de ternera parrillero bañado en chimichurri artesanal. Dip de jalapeños con champiñones y cebollas caramelizadas."
+        }
+      ],
+      "foto": {
+        "src": "/img/cat/burgers",
+        "widths": [
+          400,
+          800,
+          1200
+        ],
+        "ratio": "4 / 3",
+        "alt": "Las burgers de Dakota agrupadas: pan pretzel, cheddar fundido y aros de cebolla",
+        "fondo": "alfa"
+      }
+    },
+    {
+      "id": "hot-dogs",
+      "nombre": "Hot Dogs",
+      "script": "estilo calle",
+      "dobleprecio": true,
+      "productos": [
+        {
+          "id": "street-classic",
+          "nombre": "Street Classic",
+          "precio": 18500,
+          "precioPapa": 26500,
+          "chef": true,
+          "desc": "Salchicha americana parrillada a la brasa del Josper, pan artesanal sellado en mantequilla con base de cebolla picada, ripio de papa crujiente y montaña nevada de queso rallado fino. Las salsas van a tu gusto."
+        },
+        {
+          "id": "the-ganster",
+          "nombre": "The Ganster",
+          "precio": 36500,
+          "precioPapa": 44000,
+          "picante": true,
+          "desc": "Chorizo de ternera a la plancha y pulled pork en BBQ premium sobre dip de jalapeño. Tocineta crujiente, baño de queso fundido, avalancha de Tostacos picantes y dados de queso costeño fritos al instante."
+        },
+        {
+          "id": "smokehouse",
+          "nombre": "Smokehouse",
+          "precio": 37000,
+          "precioPapa": 44500,
+          "desc": "Pan brioche premium con salchicha americana, mix de res y pollo marinados al estilo del Oeste y mermelada artesanal de chorizo. Bañado en queso fundido, ripio crocante y MayoChipotle de la casa."
+        },
+        {
+          "id": "the-bad-boy",
+          "nombre": "The Bad Boy",
+          "precio": 38500,
+          "precioPapa": 46500,
+          "estrella": true,
+          "desc": "Pan brioche sellado, salchicha premium, pollo desmechado, carne en cuadritos a la plancha, cebolla grillé, tocineta crocante, ripio de papa y tártara artesanal, sepultado bajo queso fundido hirviendo.",
+          "nota": "Disponible en 19 cm y versión Monster de 32 cm"
+        }
+      ],
+      "foto": {
+        "src": "/img/cat/hot-dogs",
+        "widths": [
+          400,
+          800
+        ],
+        "ratio": "1 / 1",
+        "alt": "Hot dog Dakota con tocineta y queso, acompañado de papa a la francesa",
+        "fondo": "alfa"
+      }
+    },
+    {
+      "id": "papas",
+      "nombre": "Papas y Picadas",
+      "script": "para la mesa",
+      "adiciones": [
+        {
+          "nombre": "Salchicha adicional",
+          "precio": 7000
+        },
+        {
+          "nombre": "Chorizo adicional",
+          "precio": 8500
+        },
+        {
+          "nombre": "Quesudo",
+          "precio": 9500
+        }
+      ],
+      "productos": [
+        {
+          "id": "pechuga-300",
+          "nombre": "Pechuga 300",
+          "precio": 37000,
+          "desc": "300 g de pechuga a la parrilla sobre papa a la francesa."
+        },
+        {
+          "id": "costillas-300",
+          "nombre": "Costillas 300",
+          "precio": 37000,
+          "desc": "300 g de costilla de cerdo al Josper sobre papa a la francesa."
+        },
+        {
+          "id": "desgranado",
+          "nombre": "Desgranado",
+          "precio": 38000,
+          "desc": "Maíz tierno, papa, proteína y queso fundido en una sola cazuela."
+        },
+        {
+          "id": "salchipapa",
+          "nombre": "Salchipapa",
+          "precio": 45000,
+          "desc": "El clásico de la casa con una salchicha. Suma la segunda o vuélvela quesuda."
+        },
+        {
+          "id": "chori-fire",
+          "nombre": "Chori-Fire",
+          "precio": 46500,
+          "desc": "Un chorizo parrillero entero sobre montaña de papa. Suma el segundo o vuélvela quesuda."
+        },
+        {
+          "id": "big-mama",
+          "nombre": "Big Mama",
+          "precio": 54000,
+          "estrella": true,
+          "desc": "La grande. Papa, proteína mixta y queso, pensada para compartir."
+        },
+        {
+          "id": "picada",
+          "nombre": "Picada",
+          "precio": 85500,
+          "desc": "La picada completa Dakota. Para la mesa entera."
+        }
+      ],
+      "foto": {
+        "src": "/img/cat/papas",
+        "widths": [
+          400,
+          800
+        ],
+        "ratio": "1 / 1",
+        "alt": "Papas cargadas con queso fundido y tocineta en plato negro",
+        "fondo": "alfa"
+      }
+    },
+    {
+      "id": "bebidas",
+      "nombre": "Bebidas",
+      "script": "para acompañar",
+      "productos": [
+        {
+          "id": "agua-cristal",
+          "nombre": "Agua Cristal 600 ml",
+          "precio": 4000
+        },
+        {
+          "id": "h2o",
+          "nombre": "H2O 600 ml",
+          "precio": 5000
+        },
+        {
+          "id": "bretana",
+          "nombre": "Bretaña 300 ml",
+          "precio": 5000
+        },
+        {
+          "id": "gaseosa-pet",
+          "nombre": "Gaseosa PET 400 ml",
+          "precio": 5000
+        },
+        {
+          "id": "gaseosa-litro",
+          "nombre": "Gaseosa 1,25 L",
+          "precio": 9000
+        },
+        {
+          "id": "jugo-hit",
+          "nombre": "Jugo Hit 500 ml",
+          "precio": 6000
+        },
+        {
+          "id": "soda-hatsu",
+          "nombre": "Soda Hatsu 300 ml",
+          "precio": 6000
+        },
+        {
+          "id": "te-hatsu",
+          "nombre": "Té Hatsu 400 ml",
+          "precio": 8500
+        }
+      ]
+    }
+  ]
+}
