@@ -1,0 +1,60 @@
+{
+  "/img/burgers/getsemani": [
+    400
+  ],
+  "/img/burgers/the-chief": [
+    400
+  ],
+  "/img/burgers/getsemani-b": [
+    400,
+    800
+  ],
+  "/img/burgers/the-chief-b": [
+    400,
+    800
+  ],
+  "/img/burgers/promo-lunes": [
+    400,
+    800
+  ],
+  "/img/hotdogs/hot-dog-urban": [
+    400,
+    800
+  ],
+  "/img/promos/lunes-martes-burguer": [
+    400,
+    800,
+    1200
+  ],
+  "/img/promos/hot-dog-urban": [
+    400,
+    800,
+    1200
+  ],
+  "/img/cat/burgers": [
+    400,
+    800,
+    1200
+  ],
+  "/img/cat/hot-dogs": [
+    400,
+    800
+  ],
+  "/img/cat/papas": [
+    400,
+    800
+  ],
+  "/img/cat/salsas": [
+    400,
+    800,
+    1200
+  ],
+  "/img/cat/entradas": [
+    400,
+    800,
+    1200
+  ],
+  "/img/og/portada": [
+    1200
+  ]
+}
