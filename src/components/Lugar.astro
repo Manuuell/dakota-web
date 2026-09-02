@@ -52,7 +52,7 @@ const clientes = [
         <figcaption>Servicio en mesa</figcaption>
       </figure>
 
-      <figure class="lugar__foto lugar__foto--fila lugar__foto--mesa reveal">
+      <figure class="lugar__foto lugar__foto--fila lugar__foto--fachada reveal">
         <Picture
           src="/img/local/fachada"
           alt="La fachada de Dakota iluminada de noche, con las mesas de la terraza al fondo"
@@ -165,8 +165,10 @@ const clientes = [
     .lugar__grid { grid-template-columns: 1fr 1fr; }
     /* La mesa pasa a ancho completo: sola en media fila dejaba un hueco.
        Se marca con clase propia porque :last-of-type apunta a la parrilla. */
-    .lugar__foto--mesa { grid-column: 1 / -1; }
-    .lugar__foto--mesa :global(.pic) { height: auto; aspect-ratio: 16 / 9; }
+    .lugar__foto--fachada { grid-column: 1 / -1; }
+    .lugar__foto--fachada :global(.pic) { height: auto; aspect-ratio: 16 / 9; }
+    /* El letrero esta en la parte alta del encuadre: centrado se perderia. */
+    .lugar__foto--fachada :global(.pic img) { object-position: center 12%; }
   }
   @media (max-width: 520px) {
     .lugar__grid { grid-template-columns: 1fr; }
