@@ -2,59 +2,63 @@
   "nota": "Inventario de fotografía disponible. Origen: posts públicos de @dakota.ctg (agosto 2026). Recortadas con scripts/images.mjs desde assets/raw/.",
   "galeria": [
     {
+      "src": "/img/producto/cheddar-macro",
+      "widths": [
+        400,
+        800,
+        1200
+      ],
+      "ratio": "4 / 5",
+      "destacada": true,
+      "alt": "Primer plano de cheddar fundido, mermelada de chorizo y aros de cebolla sobre la carne",
+      "titulo": "Cheddar fundido",
+      "pie": "Mermelada de chorizo"
+    },
+    {
+      "src": "/img/producto/pulled-pork",
+      "widths": [
+        400,
+        800
+      ],
+      "ratio": "4 / 5",
+      "alt": "Burger con pulled pork desmechado y queso derretido sobre papel Dakota",
+      "titulo": "Pulled pork",
+      "pie": "Desmechado al Josper"
+    },
+    {
+      "src": "/img/local/parrilla",
+      "widths": [
+        400,
+        800,
+        1200
+      ],
+      "ratio": "16 / 9",
+      "ancha": true,
+      "alt": "Carnes sellándose sobre la parrilla entre humo y llama",
+      "titulo": "El sellado",
+      "pie": "Al carbón, no a la plancha"
+    },
+    {
       "src": "/img/burgers/the-chief-b",
       "widths": [
         400,
         800
       ],
-      "ratio": "4 / 5",
-      "alt": "The Chief: doble carne premium con cheddar fundido, mermelada de chorizo y aros de cebolla al panko",
+      "ratio": "1 / 1",
+      "alt": "The Chief: doble carne premium con cheddar y aros de cebolla al panko",
       "titulo": "The Chief",
-      "pie": "Doble carne · 240 g",
-      "destacada": true
+      "pie": "Doble carne · 240 g"
     },
     {
-      "src": "/img/burgers/getsemani-b",
+      "src": "/img/producto/burger-mano",
       "widths": [
         400,
         800
       ],
-      "ratio": "4 / 5",
-      "alt": "Getsemaní: carne premium con pollo desmechado en tártara, arepa blanca y tocineta",
-      "titulo": "Getsemaní",
-      "pie": "150 g · arepa blanca"
-    },
-    {
-      "src": "/img/hotdogs/hot-dog-urban",
-      "widths": [
-        400,
-        800
-      ],
-      "ratio": "16 / 9",
-      "alt": "Hot Dog Urban coronado con queso rallado y salsas de la casa",
-      "titulo": "Hot Dog Urban",
-      "pie": "Edición de temporada",
-      "ancha": true
-    },
-    {
-      "src": "/img/burgers/the-chief",
-      "widths": [
-        400
-      ],
       "ratio": "1 / 1",
-      "alt": "The Chief servida en canasta, vista frontal",
-      "titulo": "En mesa",
-      "pie": "Servida en canasta"
-    },
-    {
-      "src": "/img/burgers/getsemani",
-      "widths": [
-        400
-      ],
-      "ratio": "1 / 1",
-      "alt": "Getsemaní sostenida en mano, corte lateral",
-      "titulo": "El corte",
-      "pie": "Getsemaní en mano"
+      "alt": "Burger de Dakota sostenida en mano frente al mural de la marca",
+      "titulo": "En mano",
+      "pie": "Como se come"
     }
   ],
   "promos": [
@@ -85,15 +89,55 @@
   ],
   "reserva": [
     {
+      "src": "/img/burgers/getsemani-b",
+      "widths": [
+        400,
+        800
+      ],
+      "alt": "Getsemaní",
+      "titulo": "Getsemaní"
+    },
+    {
       "src": "/img/burgers/promo-lunes",
       "widths": [
         400,
         800
       ],
-      "ratio": "4 / 5",
-      "alt": "Burger de promoción de lunes y martes sobre fondo rojo y amarillo",
-      "titulo": "Promo de la semana",
-      "pie": "Lunes y martes"
+      "alt": "Burger de promoción",
+      "titulo": "Promo"
+    },
+    {
+      "src": "/img/hotdogs/hot-dog-urban",
+      "widths": [
+        400,
+        800
+      ],
+      "alt": "Hot Dog Urban",
+      "titulo": "Hot Dog Urban"
+    },
+    {
+      "src": "/img/producto/jugosa",
+      "widths": [
+        400
+      ],
+      "alt": "Burger jugosa en mano con papas",
+      "titulo": "Jugosa"
+    },
+    {
+      "src": "/img/burgers/the-chief",
+      "widths": [
+        400
+      ],
+      "alt": "The Chief en canasta",
+      "titulo": "En mesa"
+    },
+    {
+      "src": "/img/burgers/getsemani",
+      "widths": [
+        400
+      ],
+      "alt": "Getsemaní en mano",
+      "titulo": "El corte"
     }
   ]
 }
