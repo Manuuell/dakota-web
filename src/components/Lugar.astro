@@ -4,7 +4,7 @@ import videos from "../data/videos.json";
 
 const clip = videos["/video/local-servicio"];
 const fuego = videos["/video/josper-fuego"];
-const fachada = videos["/video/fachada"];
+const salon = videos["/video/salon"];
 
 const clientes = [
   { src: "/img/clientes/c1", alt: "Clienta de Dakota mordiendo una burger en el local" },
@@ -53,23 +53,7 @@ const clientes = [
         <figcaption>Servicio en mesa</figcaption>
       </figure>
 
-      <figure class="lugar__clip lugar__clip--fachada reveal">
-        <video
-          src="/video/fachada.mp4"
-          poster="/video/fachada-poster.jpg"
-          width={fachada.w}
-          height={fachada.h}
-          autoplay
-          muted
-          loop
-          playsinline
-          preload="none"
-          aria-label={fachada.alt}
-        ></video>
-        <figcaption>Así se ve al llegar</figcaption>
-      </figure>
-
-      <figure class="lugar__banda lugar__clip--ancho reveal">
+      <figure class="lugar__clip lugar__clip--josper reveal">
         <video
           src="/video/josper-fuego.mp4"
           poster="/video/josper-fuego-poster.jpg"
@@ -83,6 +67,22 @@ const clientes = [
           aria-label={fuego.alt}
         ></video>
         <figcaption>El Josper, a las siete de la tarde</figcaption>
+      </figure>
+
+      <figure class="lugar__banda lugar__clip--ancho reveal">
+        <video
+          src="/video/salon.mp4"
+          poster="/video/salon-poster.jpg"
+          width={salon.w}
+          height={salon.h}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="none"
+          aria-label={salon.alt}
+        ></video>
+        <figcaption>Así se ve al llegar</figcaption>
       </figure>
 
     </div>
@@ -130,8 +130,8 @@ const clientes = [
   .lugar__clip { aspect-ratio: 9 / 16; }
   /* Este clip es cuadrado: en vez de forzarle 9:16 se estira a la altura
      que marca la fila, igual que hacían las fotos de al lado. */
-  .lugar__clip--fachada { aspect-ratio: auto; }
-  .lugar__clip--fachada video { height: 100%; object-position: center 35%; }
+  .lugar__clip--josper { aspect-ratio: auto; }
+  .lugar__clip--josper video { height: 100%; object-position: center 58%; }
   .lugar__foto--fila :global(.pic) { height: 100%; aspect-ratio: auto; }
   .lugar__banda { grid-column: 1 / -1; position: relative; overflow: hidden; margin: 0; background: var(--surface-3); }
   /* Este clip nace en 4:5. Se recorta a banda apaisada centrando la burger,
@@ -140,7 +140,7 @@ const clientes = [
     /* height:auto es obligatorio: el atributo height del <video> cuenta como
        declaracion de autor y, con ancho y alto fijados, aspect-ratio se ignora. */
     width: 100%; height: auto; display: block; aspect-ratio: 16 / 9;
-    object-fit: cover; object-position: center 62%;
+    object-fit: cover; object-position: center center;
   }
 
   .lugar__foto, .lugar__clip {
@@ -175,13 +175,13 @@ const clientes = [
     .lugar__grid { grid-template-columns: 1fr 1fr; }
     /* La mesa pasa a ancho completo: sola en media fila dejaba un hueco.
        Se marca con clase propia porque :last-of-type apunta a la parrilla. */
-    .lugar__clip--fachada { grid-column: 1 / -1; }
-    .lugar__clip--fachada video { height: auto; aspect-ratio: 16 / 9; object-position: center 30%; }
+    .lugar__clip--josper { grid-column: 1 / -1; }
+    .lugar__clip--josper video { height: auto; aspect-ratio: 16 / 9; object-position: center 62%; }
   }
   @media (max-width: 520px) {
     .lugar__grid { grid-template-columns: 1fr; }
     .lugar__foto--fila :global(.pic) { height: auto; aspect-ratio: 4 / 5; }
-    .lugar__clip--fachada video { aspect-ratio: 4 / 3; }
+    .lugar__clip--josper video { aspect-ratio: 4 / 3; }
   }
 
   /* ---------- prueba social ---------- */

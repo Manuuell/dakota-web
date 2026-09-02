@@ -47,15 +47,19 @@ const CLIPS = [
     alt: "Una burger de Dakota ante las llamas del horno Josper mientras cae el queso fundido",
   },
   {
-    // La fachada de noche. El reel lleva subtitulos quemados a media altura,
-    // asi que se recorta la franja superior: entra el letrero y salen las letras.
-    src: "DatnWKaMl81.mp4",
-    out: "fachada",
-    desde: 10.6,
-    duracion: 4.0,
-    recorte: "720:720:0:20",
-    ancho: 640,
-    alt: "La fachada iluminada de Dakota de noche, con el letrero encendido sobre la entrada",
+    // Plano general del salon, del reel de la apertura. Dos problemas del
+    // material: subtitulos quemados a media altura y un corte de plano a los
+    // 10,8 s. El recorte deja el texto fuera del cuadro y la camara lenta
+    // estira los 1,9 s utiles a casi cuatro, para que el bucle no salte.
+    src: "DZqC8WvxX5L.mp4",
+    out: "salon",
+    desde: 9.0,
+    // Ojo: duracion es la de SALIDA. Con lento:2 consume la mitad de origen.
+    duracion: 3.3,
+    recorte: "720:370:0:355",
+    lento: 2,
+    ancho: 900,
+    alt: "Plano general del salón de Dakota con las mesas ocupadas y las luminarias del techo encendidas",
   },
   {
     src: "DaCO1f1Mgf2.mp4",
@@ -85,7 +89,7 @@ for (const c of CLIPS) {
     "-i", entrada,
     "-t", String(c.duracion),
     "-an",                                   // sin audio
-    "-vf", `${c.recorte ? `crop=${c.recorte},` : ""}scale=${c.ancho}:-2`,
+    "-vf", `${c.recorte ? `crop=${c.recorte},` : ""}${c.lento ? `setpts=${c.lento}*PTS,` : ""}scale=${c.ancho}:-2`,
     "-c:v", "libx264", "-profile:v", "main", "-pix_fmt", "yuv420p",
     "-crf", "28", "-preset", "slow",
     "-movflags", "+faststart",               // empieza a reproducir sin bajar todo

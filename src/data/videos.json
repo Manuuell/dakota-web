@@ -17,11 +17,11 @@
     "duracion": 7,
     "alt": "Una burger de Dakota ante las llamas del horno Josper mientras cae el queso fundido"
   },
-  "/video/fachada": {
-    "w": 640,
-    "h": 640,
-    "duracion": 4,
-    "alt": "La fachada iluminada de Dakota de noche, con el letrero encendido sobre la entrada"
+  "/video/salon": {
+    "w": 900,
+    "h": 462,
+    "duracion": 3.3,
+    "alt": "Plano general del salón de Dakota con las mesas ocupadas y las luminarias del techo encendidas"
   },
   "/video/mesa-noche": {
     "w": 640,
