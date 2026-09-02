@@ -1,0 +1,288 @@
+---
+import "../styles/global.css";
+import Mark from "../components/Mark.astro";
+
+const {
+  title = "Dakota Smokehouse — Donde el humo manda | Cartagena",
+  description = "Premium smokehouse en Alto Bosque, Cartagena. Burgers al horno Josper, hot dogs y papas. Pedidos por WhatsApp.",
+} = Astro.props;
+
+const WHATSAPP = "573189585000";
+const nav = [
+  { href: "#menu", label: "Menú" },
+  { href: "#casa", label: "La casa" },
+  { href: "#galeria", label: "Fotos" },
+  { href: "#ubicacion", label: "Ubicación" },
+];
+---
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#151516" />
+    <link rel="icon" href="/brand/dkt.svg" type="image/svg+xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="restaurant.restaurant" />
+    <meta property="og:image" content={new URL("/img/og/portada-1200.webp", Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:locale" content="es_CO" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Caveat+Brush&family=Montserrat:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#contenido">Saltar al contenido</a>
+
+    <header class="topbar" id="topbar">
+      <div class="shell topbar__in">
+        <a class="topbar__mark" href="/" aria-label="Dakota Smokehouse — inicio">
+          <Mark />
+        </a>
+        <nav class="topbar__nav" aria-label="Principal">
+          {nav.map((i) => <a href={i.href}>{i.label}</a>)}
+        </nav>
+        <a
+          class="btn topbar__cta"
+          href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Hola Dakota, quiero hacer un pedido")}`}
+          target="_blank"
+          rel="noopener"
+        >
+          Pedir
+        </a>
+      </div>
+    </header>
+
+    <main id="contenido"><slot /></main>
+
+    <footer class="foot">
+      <div class="shell foot__in">
+        <div class="foot__brand">
+          <a href="/" aria-label="Dakota Smokehouse"><Mark /></a>
+          <p class="foot__tag">Donde el humo manda.</p>
+        </div>
+        <dl class="foot__cols">
+          <div>
+            <dt>Dónde</dt>
+            <dd>Tv. 48a #21C&nbsp;54, El&nbsp;Refugio<br />Alto Bosque</dd>
+            <dd>Cartagena de Indias</dd>
+          </div>
+          <div>
+            <dt>Pedidos</dt>
+            <dd><a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener">+57 318 958 5000</a></dd>
+            <dd><a href="https://instagram.com/dakota.ctg" target="_blank" rel="noopener">@dakota.ctg</a></dd>
+          </div>
+          <div>
+            <dt>Carta</dt>
+            <dd><a href="#menu">Menú completo</a></dd>
+            <dd><a href="/menu-dakota-2026.pdf">Descargar PDF</a></dd>
+          </div>
+        </dl>
+      </div>
+      <div class="shell foot__legal">
+        <span class="num">© 2026 Dakota Smokehouse</span>
+        <span class="num">Cartagena · Colombia</span>
+      </div>
+    </footer>
+
+    <a
+      class="wa"
+      href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Hola Dakota, quiero hacer un pedido")}`}
+      target="_blank"
+      rel="noopener"
+      aria-label="Pedir por WhatsApp"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.44.13-.15.17-.25.25-.42.09-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03s.87 2.35.99 2.51c.12.16 1.71 2.61 4.14 3.66.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29Z"/>
+      </svg>
+    </a>
+
+    <script>
+      document.documentElement.classList.add("js");
+
+      // Solo se oculta lo que nace bajo el pliegue. Lo visible al cargar nunca se toca.
+      const targets = [...document.querySelectorAll(".reveal")].filter((el) => {
+        if (el.getBoundingClientRect().top <= window.innerHeight * 0.9) return false;
+        el.classList.add("will-rise");
+        return true;
+      });
+
+      const show = (el) => {
+        el.classList.add("is-in");
+      };
+
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (!e.isIntersecting) return;
+              show(e.target);
+              io.unobserve(e.target);
+            });
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.05 }
+        );
+        targets.forEach((el) => io.observe(el));
+      } else {
+        targets.forEach(show);
+      }
+
+      // Red de seguridad: nada se queda invisible por un observer que no dispara.
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.querySelectorAll(".reveal.will-rise:not(.is-in)").forEach((el) => {
+            if (el.getBoundingClientRect().top < window.innerHeight * 1.6) show(el);
+          });
+        }, 1200);
+      });
+
+      const bar = document.getElementById("topbar");
+      const onScroll = () => bar.classList.toggle("is-stuck", window.scrollY > 40);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: var(--dkt-red);
+    color: var(--dkt-cream);
+    padding: 12px 18px;
+    z-index: 999;
+    font-weight: 700;
+  }
+  .skip:focus { left: 8px; top: 8px; }
+
+  /* ---------- barra superior ---------- */
+  .topbar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    transition: background .45s var(--ease-out), backdrop-filter .45s var(--ease-out),
+      box-shadow .45s var(--ease-out);
+  }
+  .topbar.is-stuck {
+    background: rgba(21, 21, 22, .82);
+    backdrop-filter: saturate(140%) blur(14px);
+    box-shadow: 0 1px 0 var(--hairline);
+  }
+  .topbar__in {
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 4vw, 48px);
+    height: 74px;
+  }
+  .topbar__mark { color: var(--dkt-cream); display: block; transition: color .3s ease; }
+  .topbar__mark :global(svg) { height: 26px; width: auto; }
+  .topbar__mark:hover { color: var(--dkt-red); }
+
+  .topbar__nav {
+    display: flex;
+    gap: 30px;
+    margin-inline-start: auto;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .topbar__nav a { position: relative; padding: 6px 0; color: var(--dkt-cream); }
+  .topbar__nav a::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 2px;
+    background: var(--dkt-red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .4s var(--ease-out);
+  }
+  .topbar__nav a:hover::after, .topbar__nav a:focus-visible::after { transform: scaleX(1); }
+  .topbar__cta { padding: 11px 22px; font-size: 12px; }
+
+  @media (max-width: 720px) {
+    .topbar__nav { display: none; }
+    .topbar__cta { margin-inline-start: auto; }
+  }
+
+  /* ---------- pie ---------- */
+  .foot {
+    background: var(--dkt-char);
+    border-top: 1px solid var(--hairline);
+    padding: clamp(48px, 7vw, 84px) 0 26px;
+  }
+  .foot__in {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) 2fr;
+    gap: clamp(32px, 6vw, 72px);
+    align-items: start;
+  }
+  .foot__brand :global(svg) { height: 44px; width: auto; color: var(--dkt-red); }
+  .foot__tag {
+    font-family: var(--font-script);
+    font-size: 26px;
+    color: var(--ink-dim);
+    margin: 14px 0 0;
+  }
+  .foot__cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 32px;
+    margin: 0;
+  }
+  .foot__cols dt {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ember-hot);
+    margin-bottom: 12px;
+  }
+  .foot__cols dd { margin: 0 0 6px; font-size: 14.5px; color: var(--ink-dim); }
+  .foot__cols dd a { transition: color .25s ease; }
+  .foot__cols dd a:hover { color: var(--dkt-cream); }
+  .foot__legal {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: clamp(40px, 6vw, 68px);
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  @media (max-width: 700px) { .foot__in { grid-template-columns: 1fr; } }
+
+  /* ---------- botón flotante WhatsApp ---------- */
+  .wa {
+    position: fixed;
+    right: clamp(16px, 3vw, 30px);
+    bottom: clamp(16px, 3vw, 30px);
+    z-index: 70;
+    width: 56px; height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--dkt-red);
+    color: var(--dkt-cream);
+    box-shadow: 0 12px 32px -10px rgba(236,23,56,.85);
+    transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out);
+  }
+  .wa svg { width: 28px; height: 28px; }
+  .wa:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 16px 40px -10px rgba(255,106,31,.9); }
+</style>
