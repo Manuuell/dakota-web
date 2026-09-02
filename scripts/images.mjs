@@ -51,7 +51,7 @@ const COMPLETAS = [
   { src: "ig/DZ0mz2lRYuj.jpg", out: "producto/jugosa",        anchos: [400, 800] },
   { src: "ig/Db80m9ERZGw.jpg", out: "local/parrilla",         anchos: [400, 800, 1200] },
   { src: "ig/DZtQRV8sqhU.jpg", out: "local/neon",             anchos: [400, 800] },
-  { src: "ig/DatDB3ORU8i.jpg", out: "local/mesa",             anchos: [400, 800] },
+  { src: "ig/DatnWKaMl81.jpg", out: "local/fachada",          anchos: [400, 800] },
   { src: "ig/DZqC8WvxX5L.jpg", out: "clientes/c1",            anchos: [400, 800] },
   { src: "ig/DZxxKwPxAnG.jpg", out: "clientes/c2",            anchos: [400, 800] },
   { src: "ig/DaO9os3lIox.jpg", out: "clientes/c3",            anchos: [400, 800] },
