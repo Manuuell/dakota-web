@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Embers from "../components/Embers.astro";
 import Wordmark from "../components/Wordmark.astro";
 import Galeria from "../components/Galeria.astro";
+import Lugar from "../components/Lugar.astro";
 import Picture from "../components/Picture.astro";
 import Mark from "../components/Mark.astro";
 import menu from "../data/menu.json";
@@ -189,12 +190,14 @@ const total = menu.categorias.reduce((a, c) => a + c.productos.length, 0);
 
   <Galeria />
 
+  <Lugar />
+
   <!-- ================= UBICACIÓN ================= -->
   <section class="loc" id="ubicacion">
     <Embers density={0.45} />
     <div class="shell loc__in">
       <div class="loc__copy reveal">
-        <p class="eyebrow">05 — Dónde</p>
+        <p class="eyebrow">05 — Cómo llegar</p>
         <h2 class="loc__title">Alto Bosque,<br />frente al Malibú</h2>
         <p class="loc__addr">
           Tv. 48a #21C&nbsp;54, El Refugio<br />

@@ -1,0 +1,188 @@
+---
+import Picture from "./Picture.astro";
+import videos from "../data/videos.json";
+
+const clip = videos["/video/local-servicio"];
+const ambiente = videos["/video/local-ambiente"];
+
+const clientes = [
+  { src: "/img/clientes/c1", alt: "Clienta de Dakota mordiendo una burger en el local" },
+  { src: "/img/clientes/c2", alt: "Clienta comiendo bajo el letrero de neón de Dakota" },
+  { src: "/img/clientes/c3", alt: "Cliente sosteniendo una burger de Dakota" },
+  { src: "/img/clientes/c4", alt: "Cliente probando una burger de Dakota" },
+];
+---
+
+<section class="lugar" id="lugar">
+  <div class="shell">
+    <header class="lugar__head reveal">
+      <p class="eyebrow">04 — El lugar</p>
+      <h2 class="lugar__title">Se come<br />aquí</h2>
+      <p class="lugar__sub">
+        Alto Bosque. Mesas afuera, cocina a la vista y el letrero encendido
+        hasta que cierra el último pedido.
+      </p>
+    </header>
+
+    <div class="lugar__grid">
+      <figure class="lugar__foto lugar__foto--fila reveal">
+        <Picture
+          src="/img/local/neon"
+          alt="El letrero de neón de Dakota encendido sobre las mesas del local"
+          widths={[400, 800]}
+          ratio="4 / 5"
+          sizes="(max-width: 860px) 92vw, 44vw"
+        />
+        <figcaption>El letrero</figcaption>
+      </figure>
+
+      <figure class="lugar__clip reveal">
+        <video
+          src="/video/local-servicio.mp4"
+          poster="/video/local-servicio-poster.jpg"
+          width={clip.w}
+          height={clip.h}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="none"
+          aria-label={clip.alt}
+        ></video>
+        <figcaption>Servicio en mesa</figcaption>
+      </figure>
+
+      <figure class="lugar__foto lugar__foto--fila lugar__foto--mesa reveal">
+        <Picture
+          src="/img/local/mesa"
+          alt="Tres clientes compartiendo mesa en el interior de Dakota"
+          widths={[400]}
+          ratio="4 / 5"
+          sizes="(max-width: 860px) 92vw, 38vw"
+        />
+        <figcaption>Mesa adentro</figcaption>
+      </figure>
+
+      <figure class="lugar__foto lugar__banda reveal">
+        <Picture
+          src="/img/local/parrilla"
+          alt="Carnes sellándose sobre la parrilla entre humo y llama"
+          widths={[400, 800, 1200]}
+          ratio="16 / 10"
+          sizes="(max-width: 860px) 92vw, 56vw"
+        />
+        <figcaption>La parrilla, a las siete de la tarde</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- ---------- prueba social ---------- -->
+  <div class="gente">
+    <div class="shell">
+      <div class="gente__head reveal">
+        <p class="script gente__script">los que ya vinieron</p>
+        <p class="gente__nota num">Fotos de clientes publicadas en @dakota.ctg</p>
+      </div>
+    </div>
+
+    <ul class="gente__tira">
+      {clientes.map((c) => (
+        <li class="gente__item reveal">
+          <Picture
+            src={c.src}
+            alt={c.alt}
+            widths={[400, 800]}
+            ratio="4 / 5"
+            sizes="(max-width: 700px) 60vw, 23vw"
+          />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .lugar { background: var(--surface); padding: clamp(60px, 8vw, 116px) 0 0; }
+  .lugar__head { max-width: 54ch; margin-bottom: clamp(32px, 5vw, 54px); }
+  .lugar__title { font-size: clamp(40px, 8vw, 92px); margin: 14px 0 0; color: var(--dkt-cream); }
+  .lugar__sub { margin: 20px 0 0; color: var(--ink-dim); font-size: 16.5px; max-width: 44ch; }
+
+  /* Tres piezas arriba y la parrilla como banda a lo ancho.
+     El clip manda la altura de la fila —es vertical 9:16 como nació, forzarlo
+     a apaisado lo destroza— y las fotos de al lado se estiran a esa medida. */
+  .lugar__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(14px, 2vw, 22px);
+    align-items: stretch;
+  }
+  .lugar__clip { aspect-ratio: 9 / 16; }
+  .lugar__foto--fila :global(.pic) { height: 100%; aspect-ratio: auto; }
+  .lugar__banda { grid-column: 1 / -1; }
+
+  .lugar__foto, .lugar__clip {
+    margin: 0; position: relative; overflow: hidden; background: var(--surface-3);
+  }
+  .lugar__clip video {
+    width: 100%; height: 100%; display: block; object-fit: cover; aspect-ratio: 9 / 16;
+  }
+  .lugar__foto :global(.pic img) { transition: transform .9s var(--ease-out); }
+  .lugar__foto:hover :global(.pic img) { transform: scale(1.04); }
+
+  .lugar__foto::after, .lugar__clip::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to top, rgba(21,21,22,.8) 0%, rgba(21,21,22,0) 45%);
+  }
+  .lugar__foto figcaption, .lugar__clip figcaption {
+    position: absolute; left: 16px; bottom: 14px; z-index: 2;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ember-hot);
+  }
+
+  @media (max-width: 860px) {
+    .lugar__grid { grid-template-columns: 1fr 1fr; }
+    /* La mesa pasa a ancho completo: sola en media fila dejaba un hueco.
+       Se marca con clase propia porque :last-of-type apunta a la parrilla. */
+    .lugar__foto--mesa { grid-column: 1 / -1; }
+    .lugar__foto--mesa :global(.pic) { height: auto; aspect-ratio: 16 / 9; }
+  }
+  @media (max-width: 520px) {
+    .lugar__grid { grid-template-columns: 1fr; }
+    .lugar__foto--fila :global(.pic) { height: auto; aspect-ratio: 4 / 5; }
+  }
+
+  /* ---------- prueba social ---------- */
+  .gente { padding: clamp(48px, 7vw, 84px) 0 clamp(60px, 8vw, 110px); }
+  .gente__head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-bottom: clamp(20px, 3vw, 30px);
+  }
+  .gente__script { margin: 0; }
+  .gente__nota {
+    margin: 0; font-size: 10.5px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  /* Tira a sangre: se sale del contenedor y se desliza en móvil. */
+  .gente__tira {
+    list-style: none; margin: 0; padding: 0 var(--gutter);
+    display: grid; grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: clamp(10px, 1.6vw, 18px);
+  }
+  .gente__item { overflow: hidden; background: var(--surface-3); }
+  .gente__item :global(.pic img) {
+    transition: transform .9s var(--ease-out), filter .5s ease;
+    filter: saturate(.9);
+  }
+  .gente__item:hover :global(.pic img) { transform: scale(1.05); filter: saturate(1.05); }
+
+  @media (max-width: 700px) {
+    .gente__tira {
+      grid-auto-columns: 60vw;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .gente__item { scroll-snap-align: start; }
+  }
+</style>
