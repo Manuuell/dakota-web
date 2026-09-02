@@ -1,0 +1,69 @@
+---
+/**
+ * <picture> responsivo con AVIF + WebP.
+ * `src` es la ruta base sin sufijo de ancho: "/img/burgers/getsemani"
+ * `widths` deben existir en public/img (los genera scripts/images.mjs).
+ */
+import manifiesto from "../data/imagenes.json";
+
+interface Props {
+  src: string;
+  alt: string;
+  widths: number[];
+  sizes?: string;
+  ratio?: string;
+  loading?: "lazy" | "eager";
+  fetchpriority?: "high" | "auto";
+  class?: string;
+}
+const {
+  src,
+  alt,
+  widths,
+  sizes = "100vw",
+  ratio = "4 / 5",
+  loading = "lazy",
+  fetchpriority = "auto",
+  class: className = "",
+} = Astro.props as Props;
+
+// El manifiesto lo escribe scripts/images.mjs y dice qué anchos existen de verdad.
+// Pedir uno que no se generó deja la imagen rota en silencio, así que mandan los reales.
+const disponibles: number[] | undefined = (manifiesto as Record<string, number[]>)[src];
+if (!disponibles) {
+  throw new Error(
+    `Picture: "${src}" no está en el manifiesto. Añádela a scripts/images.mjs y ejecuta "node scripts/images.mjs".`
+  );
+}
+const usados = widths.filter((w) => disponibles.includes(w));
+const anchos = usados.length ? usados : disponibles;
+if (usados.length !== widths.length) {
+  console.warn(
+    `[Picture] ${src}: pedidos ${widths.join("/")}, disponibles ${disponibles.join("/")}. Se usan ${anchos.join("/")}.`
+  );
+}
+
+const set = (ext: string) => anchos.map((w) => `${src}-${w}.${ext} ${w}w`).join(", ");
+const fallback = `${src}-${anchos[anchos.length - 1]}.webp`;
+---
+<picture class:list={["pic", className]} style={`--ratio:${ratio}`}>
+  <source type="image/avif" srcset={set("avif")} sizes={sizes} />
+  <source type="image/webp" srcset={set("webp")} sizes={sizes} />
+  <img src={fallback} alt={alt} loading={loading} decoding="async" fetchpriority={fetchpriority} />
+</picture>
+
+<style>
+  .pic {
+    display: block;
+    position: relative;
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+    background: var(--surface-3);
+  }
+  .pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+</style>
