@@ -56,5 +56,49 @@
   ],
   "/img/og/portada": [
     1200
+  ],
+  "/img/producto/cheddar-macro": [
+    400,
+    800,
+    1200
+  ],
+  "/img/producto/pulled-pork": [
+    400,
+    800
+  ],
+  "/img/producto/burger-mano": [
+    400,
+    800
+  ],
+  "/img/producto/jugosa": [
+    400
+  ],
+  "/img/local/parrilla": [
+    400,
+    800,
+    1200
+  ],
+  "/img/local/neon": [
+    400,
+    800
+  ],
+  "/img/local/mesa": [
+    400
+  ],
+  "/img/clientes/c1": [
+    400,
+    800
+  ],
+  "/img/clientes/c2": [
+    400,
+    800
+  ],
+  "/img/clientes/c3": [
+    400,
+    800
+  ],
+  "/img/clientes/c4": [
+    400,
+    800
   ]
 }
