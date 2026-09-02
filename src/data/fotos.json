@@ -1,0 +1,99 @@
+{
+  "nota": "Inventario de fotografía disponible. Origen: posts públicos de @dakota.ctg (agosto 2026). Recortadas con scripts/images.mjs desde assets/raw/.",
+  "galeria": [
+    {
+      "src": "/img/burgers/the-chief-b",
+      "widths": [
+        400,
+        800
+      ],
+      "ratio": "4 / 5",
+      "alt": "The Chief: doble carne premium con cheddar fundido, mermelada de chorizo y aros de cebolla al panko",
+      "titulo": "The Chief",
+      "pie": "Doble carne · 240 g",
+      "destacada": true
+    },
+    {
+      "src": "/img/burgers/getsemani-b",
+      "widths": [
+        400,
+        800
+      ],
+      "ratio": "4 / 5",
+      "alt": "Getsemaní: carne premium con pollo desmechado en tártara, arepa blanca y tocineta",
+      "titulo": "Getsemaní",
+      "pie": "150 g · arepa blanca"
+    },
+    {
+      "src": "/img/hotdogs/hot-dog-urban",
+      "widths": [
+        400,
+        800
+      ],
+      "ratio": "16 / 9",
+      "alt": "Hot Dog Urban coronado con queso rallado y salsas de la casa",
+      "titulo": "Hot Dog Urban",
+      "pie": "Edición de temporada",
+      "ancha": true
+    },
+    {
+      "src": "/img/burgers/the-chief",
+      "widths": [
+        400
+      ],
+      "ratio": "1 / 1",
+      "alt": "The Chief servida en canasta, vista frontal",
+      "titulo": "En mesa",
+      "pie": "Servida en canasta"
+    },
+    {
+      "src": "/img/burgers/getsemani",
+      "widths": [
+        400
+      ],
+      "ratio": "1 / 1",
+      "alt": "Getsemaní sostenida en mano, corte lateral",
+      "titulo": "El corte",
+      "pie": "Getsemaní en mano"
+    }
+  ],
+  "promos": [
+    {
+      "src": "/img/promos/lunes-martes-burguer",
+      "widths": [
+        400,
+        800,
+        1200
+      ],
+      "alt": "Promoción Lunes, Martes y ¡Burguer!: Getsemaní 25 mil y The Chief 27 mil",
+      "titulo": "Lunes, Martes y ¡Burguer!",
+      "detalle": "Getsemaní $25.000 · The Chief $27.000",
+      "vigencia": "Lunes y martes"
+    },
+    {
+      "src": "/img/promos/hot-dog-urban",
+      "widths": [
+        400,
+        800,
+        1200
+      ],
+      "alt": "Promoción Hot Dog Urban a 17.990 pesos, del 31 de agosto al 6 de septiembre",
+      "titulo": "Hot Dog Urban",
+      "detalle": "$17.990",
+      "vigencia": "31 ago — 6 sep"
+    }
+  ],
+  "reserva": [
+    {
+      "src": "/img/burgers/promo-lunes",
+      "widths": [
+        400,
+        800
+      ],
+      "ratio": "4 / 5",
+      "alt": "Burger de promoción de lunes y martes sobre fondo rojo y amarillo",
+      "titulo": "Promo de la semana",
+      "pie": "Lunes y martes"
+    }
+  ]
+}

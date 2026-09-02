@@ -1,0 +1,220 @@
+---
+import Picture from "./Picture.astro";
+import Embers from "./Embers.astro";
+import fotos from "../data/fotos.json";
+
+const { galeria, promos } = fotos;
+const [principal, ...resto] = galeria;
+const ancha = resto.find((f) => f.ancha);
+const chicas = resto.filter((f) => !f.ancha);
+---
+
+<!-- ===================== PROMOS ===================== -->
+<section class="promos" id="promos">
+  <div class="shell">
+    <header class="promos__head reveal">
+      <p class="eyebrow">03 — Esta semana</p>
+      <h2 class="promos__title">Promos<br />vivas</h2>
+      <p class="promos__sub">
+        Lo que está corriendo ahora en el local. Cambian cada semana.
+      </p>
+    </header>
+
+    <ul class="promos__list">
+      {promos.map((p) => (
+        <li class="promo reveal">
+          <a class="promo__shot" href={p.src + "-" + p.widths[p.widths.length - 1] + ".webp"} target="_blank" rel="noopener">
+            <Picture src={p.src} alt={p.alt} widths={p.widths} ratio="4 / 5" sizes="(max-width: 780px) 88vw, 40vw" />
+            <span class="promo__zoom" aria-hidden="true">Ver pieza</span>
+          </a>
+          <div class="promo__meta">
+            <p class="promo__vig num">{p.vigencia}</p>
+            <h3 class="promo__name">{p.titulo}</h3>
+            <p class="promo__det">{p.detalle}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== GALERÍA ===================== -->
+<section class="gal" id="galeria">
+  <Embers density={0.35} />
+
+  <div class="shell gal__head reveal">
+    <p class="eyebrow">04 — Al fuego</p>
+    <h2 class="gal__title"><span class="gal__title-fill">Se ve<br />se huele</span></h2>
+  </div>
+
+  <div class="shell">
+    <div class="mosaic">
+      <figure class="tile tile--hero reveal">
+        <Picture
+          src={principal.src}
+          alt={principal.alt}
+          widths={principal.widths}
+          ratio={principal.ratio}
+          sizes="(max-width: 860px) 92vw, 52vw"
+        />
+        <figcaption>
+          <b>{principal.titulo}</b>
+          <span>{principal.pie}</span>
+        </figcaption>
+      </figure>
+
+      <div class="tile-col">
+        {chicas.map((f) => (
+          <figure class="tile reveal">
+            <Picture
+              src={f.src}
+              alt={f.alt}
+              widths={f.widths}
+              ratio={f.ratio}
+              sizes="(max-width: 860px) 46vw, 24vw"
+            />
+            <figcaption>
+              <b>{f.titulo}</b>
+              <span>{f.pie}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+
+    {ancha && (
+      <figure class="tile tile--wide reveal">
+        <Picture
+          src={ancha.src}
+          alt={ancha.alt}
+          widths={ancha.widths}
+          ratio={ancha.ratio}
+          sizes="(max-width: 860px) 92vw, 78vw"
+        />
+        <figcaption>
+          <b>{ancha.titulo}</b>
+          <span>{ancha.pie}</span>
+        </figcaption>
+      </figure>
+    )}
+  </div>
+</section>
+
+<style>
+  /* ============ PROMOS ============ */
+  .promos { background: var(--dkt-red); color: var(--dkt-cream); padding: clamp(60px, 8vw, 112px) 0; }
+  .promos__head { max-width: 46ch; }
+  .promos__head .eyebrow { color: rgba(251, 246, 222, .66); }
+  .promos__title { font-size: clamp(40px, 7vw, 88px); margin: 16px 0 0; }
+  .promos__sub { margin: 16px 0 0; color: #FFDCE1; font-size: 16px; max-width: 40ch; }
+
+  .promos__list {
+    list-style: none; margin: clamp(36px, 5vw, 60px) 0 0; padding: 0;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(24px, 4vw, 44px);
+  }
+  .promo { display: flex; flex-direction: column; }
+  .promo__shot { position: relative; display: block; overflow: hidden; }
+  .promo__shot :global(.pic img) { transition: transform .8s var(--ease-out); }
+  .promo__shot:hover :global(.pic img) { transform: scale(1.045); }
+  .promo__zoom {
+    position: absolute; left: 14px; bottom: 14px;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+    background: var(--dkt-char); color: var(--dkt-cream); padding: 7px 11px;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity .35s var(--ease-out), transform .35s var(--ease-out);
+  }
+  .promo__shot:hover .promo__zoom, .promo__shot:focus-visible .promo__zoom { opacity: 1; transform: none; }
+
+  .promo__meta { padding-top: 16px; border-top: 2px solid rgba(251,246,222,.34); margin-top: 16px; }
+  .promo__vig {
+    font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+    color: rgba(251,246,222,.72); margin: 0 0 8px;
+  }
+  .promo__name {
+    font-family: var(--font-display); text-transform: uppercase;
+    font-size: clamp(20px, 2.6vw, 28px); letter-spacing: -.02em; margin: 0;
+  }
+  .promo__det { margin: 6px 0 0; font-weight: 700; font-size: 15px; color: #FFE9EC; }
+
+  /* ============ GALERÍA ============ */
+  .gal {
+    position: relative; isolation: isolate;
+    background: var(--surface-2);
+    padding: clamp(60px, 8vw, 116px) 0;
+    overflow: hidden;
+  }
+  .gal__head { position: relative; z-index: 2; max-width: 52ch; margin-bottom: clamp(34px, 5vw, 56px); }
+  .gal__title { font-size: clamp(42px, 9vw, 104px); margin: 14px 0 0; }
+  .gal__title-fill {
+    background-image: repeating-linear-gradient(45deg, var(--dkt-cream) 0 3px, transparent 3px 10px);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    -webkit-text-stroke: 1.5px var(--dkt-cream);
+  }
+  .gal__sub { margin: 20px 0 0; color: var(--ink-dim); font-size: 16px; max-width: 42ch; }
+  .gal .shell { position: relative; z-index: 2; }
+
+  .mosaic {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: clamp(14px, 2vw, 22px);
+    align-items: stretch;
+  }
+  /* La columna derecha cierra a la misma altura que la pieza grande:
+     la fila superior absorbe el sobrante y su imagen deja de mandar la altura. */
+  .tile-col {
+    display: grid;
+    gap: clamp(14px, 2vw, 22px);
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    min-height: 0;
+  }
+  .tile-col .tile:first-child { grid-column: span 2; min-height: 0; }
+  .tile-col .tile:first-child :global(.pic) { aspect-ratio: auto; height: 100%; }
+
+  .tile { margin: 0; position: relative; overflow: hidden; background: var(--surface-3); }
+  .tile :global(.pic img) { transition: transform .9s var(--ease-out), filter .6s ease; }
+  .tile:hover :global(.pic img) { transform: scale(1.05); }
+  /* velo de brasa que se retira al acercarse */
+  .tile::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to top, rgba(21,21,22,.86) 0%, rgba(21,21,22,.15) 42%, rgba(194,26,18,.18) 100%);
+    transition: opacity .6s var(--ease-out);
+  }
+  .tile:hover::after { opacity: .55; }
+
+  .tile figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+    display: flex; flex-direction: column; gap: 3px;
+    padding: 16px 18px;
+  }
+  .tile figcaption b {
+    font-family: var(--font-display); text-transform: uppercase;
+    font-size: clamp(14px, 1.7vw, 19px); letter-spacing: -.015em; color: var(--dkt-cream);
+  }
+  .tile figcaption span {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ember-hot);
+  }
+  .tile--wide { margin-top: clamp(14px, 2vw, 22px); }
+
+  @media (max-width: 860px) {
+    .mosaic { grid-template-columns: 1fr; }
+    .tile-col { grid-template-rows: auto auto; height: auto; }
+    .tile-col .tile:first-child :global(.pic) { aspect-ratio: 4 / 5; height: auto; }
+  }
+  @media (max-width: 520px) {
+    .tile-col { grid-template-columns: 1fr; }
+    .tile-col .tile:first-child { grid-column: auto; }
+  }
+
+  .gal__gap {
+    margin: clamp(30px, 4vw, 46px) 0 0;
+    padding: 16px 0 16px 20px;
+    border-left: 3px solid var(--ember-mid);
+    font-size: 14px; color: var(--ink-dim); max-width: 66ch;
+  }
+  .gal__gap b { color: var(--ember-hot); }
+  .gal__gap a { color: var(--dkt-cream); text-decoration: underline; text-underline-offset: 3px; }
+</style>
