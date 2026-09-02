@@ -47,6 +47,17 @@ const CLIPS = [
     alt: "Una burger de Dakota ante las llamas del horno Josper mientras cae el queso fundido",
   },
   {
+    // La fachada de noche. El reel lleva subtitulos quemados a media altura,
+    // asi que se recorta la franja superior: entra el letrero y salen las letras.
+    src: "DatnWKaMl81.mp4",
+    out: "fachada",
+    desde: 10.6,
+    duracion: 4.0,
+    recorte: "720:720:0:20",
+    ancho: 640,
+    alt: "La fachada iluminada de Dakota de noche, con el letrero encendido sobre la entrada",
+  },
+  {
     src: "DaCO1f1Mgf2.mp4",
     out: "mesa-noche",
     desde: 4,
@@ -74,7 +85,7 @@ for (const c of CLIPS) {
     "-i", entrada,
     "-t", String(c.duracion),
     "-an",                                   // sin audio
-    "-vf", `scale=${c.ancho}:-2`,
+    "-vf", `${c.recorte ? `crop=${c.recorte},` : ""}scale=${c.ancho}:-2`,
     "-c:v", "libx264", "-profile:v", "main", "-pix_fmt", "yuv420p",
     "-crf", "28", "-preset", "slow",
     "-movflags", "+faststart",               // empieza a reproducir sin bajar todo
@@ -86,7 +97,7 @@ for (const c of CLIPS) {
     "-ss", String(c.desde + 1),
     "-i", entrada,
     "-frames:v", "1",
-    "-vf", `scale=${c.ancho}:-2`,
+    "-vf", `${c.recorte ? `crop=${c.recorte},` : ""}scale=${c.ancho}:-2`,
     "-q:v", "4",
     poster,
   ]);

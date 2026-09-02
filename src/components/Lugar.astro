@@ -4,6 +4,7 @@ import videos from "../data/videos.json";
 
 const clip = videos["/video/local-servicio"];
 const fuego = videos["/video/josper-fuego"];
+const fachada = videos["/video/fachada"];
 
 const clientes = [
   { src: "/img/clientes/c1", alt: "Clienta de Dakota mordiendo una burger en el local" },
@@ -52,14 +53,19 @@ const clientes = [
         <figcaption>Servicio en mesa</figcaption>
       </figure>
 
-      <figure class="lugar__foto lugar__foto--fila lugar__foto--fachada reveal">
-        <Picture
-          src="/img/local/fachada"
-          alt="La fachada de Dakota iluminada de noche, con las mesas de la terraza al fondo"
-          widths={[400, 800]}
-          ratio="4 / 5"
-          sizes="(max-width: 860px) 92vw, 38vw"
-        />
+      <figure class="lugar__clip lugar__clip--fachada reveal">
+        <video
+          src="/video/fachada.mp4"
+          poster="/video/fachada-poster.jpg"
+          width={fachada.w}
+          height={fachada.h}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="none"
+          aria-label={fachada.alt}
+        ></video>
         <figcaption>Así se ve al llegar</figcaption>
       </figure>
 
@@ -122,6 +128,10 @@ const clientes = [
     align-items: stretch;
   }
   .lugar__clip { aspect-ratio: 9 / 16; }
+  /* Este clip es cuadrado: en vez de forzarle 9:16 se estira a la altura
+     que marca la fila, igual que hacían las fotos de al lado. */
+  .lugar__clip--fachada { aspect-ratio: auto; }
+  .lugar__clip--fachada video { height: 100%; object-position: center 35%; }
   .lugar__foto--fila :global(.pic) { height: 100%; aspect-ratio: auto; }
   .lugar__banda { grid-column: 1 / -1; position: relative; overflow: hidden; margin: 0; background: var(--surface-3); }
   /* Este clip nace en 4:5. Se recorta a banda apaisada centrando la burger,
@@ -165,14 +175,13 @@ const clientes = [
     .lugar__grid { grid-template-columns: 1fr 1fr; }
     /* La mesa pasa a ancho completo: sola en media fila dejaba un hueco.
        Se marca con clase propia porque :last-of-type apunta a la parrilla. */
-    .lugar__foto--fachada { grid-column: 1 / -1; }
-    .lugar__foto--fachada :global(.pic) { height: auto; aspect-ratio: 16 / 9; }
-    /* El letrero esta en la parte alta del encuadre: centrado se perderia. */
-    .lugar__foto--fachada :global(.pic img) { object-position: center 12%; }
+    .lugar__clip--fachada { grid-column: 1 / -1; }
+    .lugar__clip--fachada video { height: auto; aspect-ratio: 16 / 9; object-position: center 30%; }
   }
   @media (max-width: 520px) {
     .lugar__grid { grid-template-columns: 1fr; }
     .lugar__foto--fila :global(.pic) { height: auto; aspect-ratio: 4 / 5; }
+    .lugar__clip--fachada video { aspect-ratio: 4 / 3; }
   }
 
   /* ---------- prueba social ---------- */
