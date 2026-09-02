@@ -1,0 +1,175 @@
+/* ============================================================
+   DAKOTA SMOKEHOUSE — sistema de diseño
+   Colores muestreados del arte original (MENU DAKOTAcc 2026.pdf)
+   ============================================================ */
+
+:root {
+  /* Marca */
+  --dkt-red:        #EC1738;
+  --dkt-red-deep:   #9F0B1C;
+  --dkt-char:       #151516;
+  --dkt-cream:      #FBF6DE;
+  --dkt-white:      #FFFFFF;
+
+  /* Brasa — derivados para fuego y calor */
+  --ember-core:     #FFE9A8;
+  --ember-hot:      #FFB347;
+  --ember-mid:      #FF6A1F;
+  --ember-low:      #C21A12;
+
+  /* Neutros cálidos (sesgados hacia el rojo de marca) */
+  --ink:            #FBF6DE;
+  --ink-dim:        #A99C82;
+  --ink-faint:      #6E6455;
+  --surface:        #151516;
+  --surface-2:      #1D1B19;
+  --surface-3:      #262320;
+  --hairline:       #322E29;
+
+  /* Tipografía */
+  --font-display: "Archivo Black", "Gotham Ultra", "Arial Black", Impact, sans-serif;
+  --font-body:    "Montserrat", "Gotham", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-script:  "Caveat Brush", "DonJos Trayecto", cursive;
+  --font-mono:    "Space Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* Ritmo */
+  --gutter: clamp(20px, 5vw, 64px);
+  --measure: 62ch;
+  --ease-out: cubic-bezier(.16,1,.3,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -.025em;
+  line-height: .92;
+  text-wrap: balance;
+  margin: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+img, svg, video { max-width: 100%; display: block; }
+
+:focus-visible {
+  outline: 2px solid var(--ember-hot);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* --- utilidades de composición --- */
+.shell { width: 100%; max-width: 1240px; margin-inline: auto; padding-inline: var(--gutter); }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: clamp(10px, 1.1vw, 11.5px);
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--ember-hot);
+  margin: 0;
+}
+.script {
+  font-family: var(--font-script);
+  text-transform: none;
+  letter-spacing: .01em;
+  color: var(--dkt-red);
+  font-size: clamp(24px, 3.4vw, 38px);
+  line-height: 1;
+}
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* --- trama diagonal: la textura firma del menú impreso --- */
+.hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    currentColor 0 2px,
+    transparent 2px 7px
+  );
+}
+
+/* --- botones --- */
+.btn {
+  --btn-bg: var(--dkt-red);
+  --btn-fg: var(--dkt-cream);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 28px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 13.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 0;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out);
+}
+/* barrido de brasa al pasar el cursor */
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(100deg,
+    var(--ember-low) 0%, var(--ember-mid) 42%, var(--ember-hot) 58%, var(--ember-low) 100%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  opacity: 0;
+  transition: opacity .3s ease, background-position .7s var(--ease-out);
+}
+.btn:hover, .btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 34px -12px rgba(255,106,31,.75);
+}
+.btn:hover::before, .btn:focus-visible::before { opacity: 1; background-position: 0 0; }
+
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--dkt-cream);
+  box-shadow: inset 0 0 0 1.5px rgba(251,246,222,.28);
+}
+.btn--ghost:hover { box-shadow: inset 0 0 0 1.5px rgba(255,179,71,.6), 0 10px 34px -14px rgba(255,106,31,.5); }
+
+/* --- entrada al hacer scroll ---
+   El estado oculto lo aplica el JS solo a lo que nace bajo el pliegue.
+   Sin JS, o si el observer falla, todo el contenido queda visible. --- */
+.reveal { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .reveal.will-rise {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  .reveal.will-rise.is-in {
+    opacity: 1;
+    transform: none;
+    transition: opacity .8s var(--ease-out), transform .8s var(--ease-out);
+  }
+}
