@@ -1,0 +1,20 @@
+{
+  "/video/local-servicio": {
+    "w": 640,
+    "h": 1138,
+    "duracion": 8,
+    "alt": "El equipo de Dakota sirviendo un pedido en una mesa del local"
+  },
+  "/video/local-ambiente": {
+    "w": 640,
+    "h": 1138,
+    "duracion": 8,
+    "alt": "Interior de Dakota con el letrero de neón y clientes en las mesas"
+  },
+  "/video/mesa-noche": {
+    "w": 640,
+    "h": 1138,
+    "duracion": 7,
+    "alt": "Clientes cenando en la terraza de Dakota"
+  }
+}
