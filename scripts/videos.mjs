@@ -37,6 +37,16 @@ const CLIPS = [
     alt: "Interior de Dakota con el letrero de neón y clientes en las mesas",
   },
   {
+    // 8 s enteros de la burger ante las llamas del Josper: el mejor plano
+    // de producto que hay en toda la cuenta.
+    src: "DW35STykeW4.mp4",
+    out: "josper-fuego",
+    desde: 0.3,
+    duracion: 7,
+    ancho: 720,
+    alt: "Una burger de Dakota ante las llamas del horno Josper mientras cae el queso fundido",
+  },
+  {
     src: "DaCO1f1Mgf2.mp4",
     out: "mesa-noche",
     desde: 4,

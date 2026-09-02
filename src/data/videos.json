@@ -11,6 +11,12 @@
     "duracion": 8,
     "alt": "Interior de Dakota con el letrero de neón y clientes en las mesas"
   },
+  "/video/josper-fuego": {
+    "w": 720,
+    "h": 900,
+    "duracion": 7,
+    "alt": "Una burger de Dakota ante las llamas del horno Josper mientras cae el queso fundido"
+  },
   "/video/mesa-noche": {
     "w": 640,
     "h": 1138,

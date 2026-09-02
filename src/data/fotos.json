@@ -26,17 +26,16 @@
       "pie": "Desmechado al Josper"
     },
     {
-      "src": "/img/local/parrilla",
+      "src": "/img/hotdogs/hot-dog-urban",
       "widths": [
         400,
-        800,
-        1200
+        800
       ],
       "ratio": "16 / 9",
       "ancha": true,
-      "alt": "Carnes sellándose sobre la parrilla entre humo y llama",
-      "titulo": "El sellado",
-      "pie": "Al carbón, no a la plancha"
+      "alt": "Hot Dog Urban coronado con queso rallado y salsas de la casa",
+      "titulo": "Hot Dog Urban",
+      "pie": "Edicion de temporada"
     },
     {
       "src": "/img/burgers/the-chief-b",
