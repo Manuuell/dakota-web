@@ -1,0 +1,582 @@
+---
+import Base from "../layouts/Base.astro";
+import Embers from "../components/Embers.astro";
+import Wordmark from "../components/Wordmark.astro";
+import Galeria from "../components/Galeria.astro";
+import Picture from "../components/Picture.astro";
+import Mark from "../components/Mark.astro";
+import menu from "../data/menu.json";
+
+const WHATSAPP = "573189585000";
+const cop = (n: number) => "$" + new Intl.NumberFormat("es-CO").format(n);
+const pedir = (p: string) =>
+  `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola Dakota, quiero pedir la ${p}`)}`;
+
+const total = menu.categorias.reduce((a, c) => a + c.productos.length, 0);
+---
+
+<Base>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="hero__coals" aria-hidden="true"></div>
+    <Embers density={1} />
+    <div class="hero__hatch" aria-hidden="true"></div>
+
+    <div class="shell hero__in">
+      <p class="eyebrow hero__eyebrow">Alto Bosque · Cartagena de Indias</p>
+
+      <h1 class="hero__wordmark"><Wordmark /></h1>
+
+      <p class="hero__script script">Donde el humo manda</p>
+
+      <p class="hero__lede">
+        Premium smokehouse. Carne sellada al carbón en horno Josper, pan pretzel
+        artesanal y salsas de la casa. Estilo americano con esencia caribeña.
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn" href="#menu">Ver el menú</a>
+        <a class="btn btn--ghost" href={pedir("Big Dakota")} target="_blank" rel="noopener">
+          Pedir por WhatsApp
+        </a>
+      </div>
+
+      <dl class="hero__facts">
+        <div><dt>Horno</dt><dd>Josper a carbón</dd></div>
+        <div><dt>Carta</dt><dd><span class="num">{total}</span> platos</dd></div>
+        <div><dt>Domicilios</dt><dd>Cartagena</dd></div>
+      </dl>
+    </div>
+
+    <div class="hero__ember-line" aria-hidden="true"></div>
+  </section>
+
+  <!-- ================= LA CASA ================= -->
+  <section class="casa" id="casa">
+    <div class="shell casa__in">
+      <div class="casa__copy reveal">
+        <p class="eyebrow casa__eyebrow">01 — El método</p>
+        <h2 class="casa__title">Todo pasa<br />por el fuego</h2>
+        <p>
+          El Josper es un horno cerrado de carbón que trabaja por encima de los
+          300&nbsp;°C. Sella la carne por fuera en segundos y le deja el jugo
+          adentro, con el ahumado que ninguna plancha da.
+        </p>
+        <p>
+          De ahí sale la <strong>Smoky</strong>, sale la <strong>Maverick</strong> y sale
+          el <strong>Street Classic</strong>. Lo demás lo ponen el pan pretzel horneado
+          cada día y las salsas que hacemos en casa.
+        </p>
+      </div>
+      <ul class="casa__list reveal">
+        <li><span class="num">150 g</span><b>de carne premium</b><i>en cada burger sencilla</i></li>
+        <li><span class="num">300 °C</span><b>de horno Josper</b><i>sellado al carbón, no a la plancha</i></li>
+        <li><span class="num">100 %</span><b>salsas de la casa</b><i>tártara, gaucha, chipotle y bacon jam</i></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= MENÚ ================= -->
+  <section class="menu" id="menu">
+    <div class="shell">
+      <header class="menu__head reveal">
+        <p class="eyebrow">02 — La carta</p>
+        <h2 class="menu__title">Menú</h2>
+        <p class="menu__note">
+          Precios en pesos colombianos. Actualizado a junio de 2026.
+          <a href="/menu-dakota-2026.pdf">Descargar el PDF</a>
+        </p>
+      </header>
+
+      <nav class="menu__tabs" aria-label="Categorías del menú">
+        {menu.categorias.map((c) => (
+          <a href={`#cat-${c.id}`} data-cat={c.id}>{c.nombre}</a>
+        ))}
+      </nav>
+    </div>
+
+    {menu.categorias.map((c, ci) => (
+      <div class:list={["cat", ci % 2 === 1 && "cat--alt"]} id={`cat-${c.id}`}>
+        <div class="shell">
+          <header class:list={["cat__head", c.foto && "cat__head--foto"]}>
+            <div class="cat__lede">
+            <p class="script cat__script">{c.script}</p>
+            <h3 class="cat__title">
+              <span class="cat__title-fill">{c.nombre}</span>
+            </h3>
+            {c.adiciones && (
+              <ul class="cat__adds">
+                {c.adiciones.map((a) => (
+                  <li><span>{a.nombre}</span><b class="num">+{cop(a.precio)}</b></li>
+                ))}
+              </ul>
+            )}
+            </div>
+            {c.foto && (
+              <div class:list={["cat__foto", `cat__foto--${c.foto.fondo}`]}>
+                <Picture
+                  src={c.foto.src}
+                  alt={c.foto.alt}
+                  widths={c.foto.widths}
+                  ratio={c.foto.ratio}
+                  sizes="(max-width: 860px) 70vw, 38vw"
+                />
+              </div>
+            )}
+          </header>
+
+          <ul class="items">
+            {c.productos.map((p, i) => (
+              <li class="item reveal">
+                <span class="item__idx num">{String(i + 1).padStart(2, "0")}</span>
+
+                <div class="item__body">
+                  <h4 class="item__name">
+                    {p.nombre}
+                    {p.estrella && <em class="flag flag--star">La reina</em>}
+                    {p.chef && <em class="flag flag--chef">Del chef</em>}
+                    {p.picante && <em class="flag flag--hot">Picante</em>}
+                    {p.doble && <em class="flag">Doble carne</em>}
+                  </h4>
+                  {p.desc && <p class="item__desc">{p.desc}</p>}
+                  {p.nota && <p class="item__nota">{p.nota}</p>}
+                  <a class="item__order" href={pedir(p.nombre)} target="_blank" rel="noopener">
+                    Pedir esta →
+                  </a>
+                </div>
+
+                <div class="item__price">
+                  {p.precioPapa ? (
+                    <>
+                      <span class="pr"><i>Sin papa</i><b class="num">{cop(p.precio)}</b></span>
+                      <span class="pr pr--hot"><i>Con papa</i><b class="num">{cop(p.precioPapa)}</b></span>
+                    </>
+                  ) : (
+                    <span class="pr pr--solo"><b class="num">{cop(p.precio)}</b></span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    ))}
+
+    <div class="shell">
+      <aside class="salsas reveal">
+        <div class="salsas__copy">
+          <p class="script salsas__script">de la casa</p>
+          <h3 class="salsas__title">Salsas artesanales</h3>
+          <p class="salsas__txt">
+            Todas se hacen acá. Tártara, rosada ahumada, gaucha, chimichurri,
+            mayochipotle, suero de chipotle, BBQ de guayaba, hawaiana, bacon jam,
+            dulce de piña y el dip de jalapeño.
+          </p>
+          <p class="salsas__nota num">Van incluidas con tu pedido. Pide la que quieras.</p>
+        </div>
+        <div class="salsas__foto">
+          <Picture
+            src="/img/cat/salsas"
+            alt="Tres salsas artesanales de la casa servidas en cuencos"
+            widths={[400, 800]}
+            ratio="2 / 1"
+            sizes="(max-width: 860px) 88vw, 46vw"
+          />
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Galeria />
+
+  <!-- ================= UBICACIÓN ================= -->
+  <section class="loc" id="ubicacion">
+    <Embers density={0.45} />
+    <div class="shell loc__in">
+      <div class="loc__copy reveal">
+        <p class="eyebrow">05 — Dónde</p>
+        <h2 class="loc__title">Alto Bosque,<br />frente al Malibú</h2>
+        <p class="loc__addr">
+          Tv. 48a #21C&nbsp;54, El Refugio<br />
+          Alto Bosque, frente al Edificio Malibú<br />
+          Cartagena de Indias, Bolívar
+        </p>
+        <div class="loc__cta">
+          <a class="btn" href={pedir("Big Dakota")} target="_blank" rel="noopener">
+            Pedir por WhatsApp
+          </a>
+          <a
+            class="btn btn--ghost"
+            href="https://www.google.com/maps/search/?api=1&query=Transversal+48a+%2321C-54+El+Refugio+Alto+Bosque+Cartagena"
+            target="_blank"
+            rel="noopener"
+          >
+            Cómo llegar
+          </a>
+        </div>
+        <p class="loc__pending num">
+          Horarios y zonas de domicilio pendientes de confirmar
+        </p>
+      </div>
+      <div class="loc__mark reveal" aria-hidden="true"><Mark /></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    background: var(--dkt-char);
+    min-height: clamp(600px, 88vh, 940px);
+    display: flex;
+    align-items: flex-end;
+    padding: 150px 0 clamp(60px, 8vw, 96px);
+    overflow: hidden;
+  }
+  /* brasa: el resplandor que sube desde el borde inferior */
+  .hero__coals {
+    position: absolute;
+    inset: auto 0 -30% 0;
+    height: 85%;
+    z-index: 0;
+    background:
+      radial-gradient(60% 100% at 50% 100%, rgba(255,106,31,.34) 0%, rgba(255,106,31,0) 68%),
+      radial-gradient(38% 78% at 22% 100%, rgba(236,23,56,.30) 0%, rgba(236,23,56,0) 70%),
+      radial-gradient(34% 70% at 82% 100%, rgba(255,179,71,.20) 0%, rgba(255,179,71,0) 72%);
+    animation: breathe 7.5s ease-in-out infinite alternate;
+  }
+  @keyframes breathe { from { opacity: .72; } to { opacity: 1; } }
+
+  .hero__hatch {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    color: rgba(251,246,222,.028);
+    background-image: repeating-linear-gradient(45deg, currentColor 0 2px, transparent 2px 9px);
+    mask-image: linear-gradient(to top, #000 0%, transparent 60%);
+  }
+
+  .hero__in { position: relative; z-index: 2; text-align: center; }
+  .hero__eyebrow { animation: rise .9s var(--ease-out) both .1s; }
+
+  .hero__wordmark { margin: 22px auto 0; max-width: min(760px, 88%); }
+  .hero__wordmark :global(.wordmark) { width: 100%; height: auto; color: var(--dkt-cream); overflow: visible; }
+  /* las letras entran escalonadas, como si se encendieran una a una */
+  .hero__wordmark :global(.wm-l) {
+    animation: letter .95s var(--ease-out) both;
+    animation-delay: calc(.22s + var(--i) * .075s);
+  }
+  @keyframes letter {
+    from { opacity: 0; transform: translateY(26px); filter: blur(9px); }
+    to   { opacity: 1; transform: none; filter: blur(0); }
+  }
+  /* la llama dentro de la D: parpadeo continuo */
+  .hero__wordmark :global(.wm-flame-wrap) { animation: flameIn 1s var(--ease-out) both .85s; transform-origin: 283px 990px; }
+  .hero__wordmark :global(.wm-flame) {
+    animation: flicker 2.6s ease-in-out infinite;
+    transform-origin: 283px 990px;
+  }
+  @keyframes flameIn { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: scale(1); } }
+  @keyframes flicker {
+    0%, 100% { transform: scaleY(1)    scaleX(1)    translateY(0);    opacity: 1; }
+    18%      { transform: scaleY(1.09) scaleX(.965) translateY(-1.5px); opacity: .93; }
+    37%      { transform: scaleY(.955) scaleX(1.03) translateY(.8px);  opacity: 1; }
+    59%      { transform: scaleY(1.06) scaleX(.98)  translateY(-1px);  opacity: .96; }
+    78%      { transform: scaleY(.985) scaleX(1.01) translateY(.4px);  opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__wordmark :global(.wm-flame),
+    .hero__coals { animation: none; }
+  }
+
+  .hero__script { margin: 26px 0 0; color: var(--ember-hot); animation: rise .9s var(--ease-out) both .75s; }
+  .hero__lede {
+    max-width: 48ch;
+    margin: 16px auto 0;
+    font-size: clamp(15.5px, 1.6vw, 18px);
+    color: var(--ink-dim);
+    animation: rise .9s var(--ease-out) both .85s;
+  }
+  .hero__cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 34px; animation: rise .9s var(--ease-out) both .95s; }
+
+  .hero__facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0;
+    margin: clamp(44px, 6vw, 72px) 0 0;
+    border-top: 1px solid var(--hairline);
+    animation: rise .9s var(--ease-out) both 1.05s;
+  }
+  .hero__facts > div { padding: 18px 30px 0; border-right: 1px solid var(--hairline); }
+  .hero__facts > div:last-child { border-right: 0; }
+  .hero__facts dt {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 5px;
+  }
+  .hero__facts dd { margin: 0; font-weight: 700; font-size: 15px; color: var(--dkt-cream); }
+
+  .hero__ember-line {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 3px; z-index: 3;
+    background: linear-gradient(90deg, var(--ember-low), var(--ember-mid) 30%, var(--ember-hot) 50%, var(--dkt-red) 78%, var(--ember-low));
+    background-size: 220% 100%;
+    animation: slide 9s linear infinite;
+  }
+  @keyframes slide { from { background-position: 0 0; } to { background-position: 220% 0; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+  /* ============ LA CASA ============ */
+  .casa { background: var(--dkt-red); color: var(--dkt-cream); padding: clamp(64px, 9vw, 128px) 0; }
+  .casa__in {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: clamp(36px, 6vw, 88px);
+    align-items: start;
+  }
+  .casa__eyebrow { color: rgba(251,246,222,.62); }
+  .casa__title { font-size: clamp(38px, 6.4vw, 82px); margin: 18px 0 26px; }
+  .casa__copy p { max-width: 46ch; font-size: clamp(15.5px, 1.6vw, 17.5px); color: #FFE6EA; margin: 0 0 16px; }
+  .casa__copy strong { color: var(--dkt-cream); font-weight: 800; }
+
+  .casa__list { list-style: none; margin: 0; padding: 0; }
+  .casa__list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 20px;
+    padding: 22px 0;
+    border-top: 1px solid rgba(251,246,222,.28);
+  }
+  .casa__list li:last-child { border-bottom: 1px solid rgba(251,246,222,.28); }
+  .casa__list span { grid-row: span 2; font-size: clamp(26px, 3.4vw, 40px); font-weight: 700; line-height: 1; align-self: center; }
+  .casa__list b { font-size: 15px; font-weight: 800; }
+  .casa__list i { font-style: normal; font-size: 13.5px; color: #FFD3DA; }
+  @media (max-width: 820px) { .casa__in { grid-template-columns: 1fr; } }
+
+  /* ============ MENÚ ============ */
+  .menu { background: var(--surface); padding: clamp(64px, 9vw, 120px) 0 0; }
+  .menu__head { max-width: 60ch; }
+  .menu__title { font-size: clamp(48px, 11vw, 140px); margin: 14px 0 0; color: var(--dkt-cream); }
+  .menu__note { font-size: 14px; color: var(--ink-faint); margin: 16px 0 0; }
+  .menu__note a { color: var(--ember-hot); text-decoration: underline; text-underline-offset: 3px; }
+
+  .menu__tabs {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin: clamp(32px, 5vw, 54px) 0 0;
+    position: sticky; top: 74px; z-index: 40;
+    padding: 12px 0;
+    background: linear-gradient(var(--surface) 72%, transparent);
+  }
+  .menu__tabs a {
+    font-family: var(--font-mono);
+    font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase;
+    padding: 9px 15px;
+    color: var(--ink-dim);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+    transition: color .3s ease, box-shadow .3s ease, background .3s ease;
+  }
+  .menu__tabs a:hover, .menu__tabs a.is-active {
+    color: var(--dkt-cream);
+    background: var(--dkt-red);
+    box-shadow: inset 0 0 0 1px var(--dkt-red);
+  }
+
+  .cat { padding: clamp(52px, 7vw, 96px) 0; scroll-margin-top: 130px; }
+  .cat--alt { background: var(--surface-2); }
+  .cat__head { margin-bottom: clamp(28px, 4vw, 46px); }
+  .cat__head--foto {
+    display: grid;
+    grid-template-columns: 1fr minmax(220px, 38%);
+    gap: clamp(20px, 4vw, 52px);
+    align-items: center;
+  }
+  .cat__foto :global(.pic) { background: transparent; }
+  /* recortes con alfa: el producto va suelto sobre el fondo, con sombra de brasa */
+  .cat__foto--alfa :global(.pic img) {
+    object-fit: contain;
+    filter: drop-shadow(0 24px 40px rgba(0, 0, 0, .6)) drop-shadow(0 0 30px rgba(255, 106, 31, .22));
+  }
+  .cat__foto--foto :global(.pic) { background: var(--surface-3); }
+  @media (max-width: 860px) {
+    .cat__head--foto { grid-template-columns: 1fr; }
+    .cat__foto { max-width: 380px; }
+  }
+  .cat__script { margin: 0 0 2px; }
+  .cat__title { font-size: clamp(40px, 9vw, 104px); line-height: .88; }
+  /* trama diagonal dentro de la letra — la firma del menú impreso */
+  .cat__title-fill {
+    background-image: repeating-linear-gradient(45deg, var(--dkt-cream) 0 3px, transparent 3px 10px);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--dkt-cream);
+    paint-order: stroke fill;
+  }
+
+  .cat__adds { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 20px 0 0; padding: 0; }
+  .cat__adds li {
+    display: flex; align-items: baseline; gap: 9px;
+    font-size: 12.5px; padding: 7px 13px;
+    box-shadow: inset 0 0 0 1px var(--hairline);
+    color: var(--ink-dim);
+  }
+  .cat__adds b { color: var(--ember-hot); font-family: var(--font-mono); font-size: 12px; }
+
+  .items { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+  .item {
+    display: grid;
+    grid-template-columns: 46px 1fr auto;
+    gap: 8px 22px;
+    padding: 26px 14px 26px 0;
+    border-bottom: 1px solid var(--hairline);
+    position: relative;
+    transition: background .4s var(--ease-out);
+  }
+  /* al pasar el cursor la fila toma calor */
+  .item::before {
+    content: "";
+    position: absolute; inset: 0 -14px;
+    background: linear-gradient(90deg, rgba(236,23,56,.10), rgba(255,106,31,.04) 55%, transparent);
+    opacity: 0;
+    transition: opacity .4s var(--ease-out);
+    pointer-events: none;
+  }
+  .item:hover::before { opacity: 1; }
+  .item__idx { font-size: 11.5px; color: var(--ink-faint); padding-top: 7px; transition: color .3s ease; }
+  .item:hover .item__idx { color: var(--ember-hot); }
+
+  .item__name {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: clamp(19px, 2.4vw, 27px);
+    letter-spacing: -.02em;
+    margin: 0 0 8px;
+    color: var(--dkt-cream);
+    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+  .item__desc { margin: 0; max-width: 58ch; font-size: 14.5px; color: var(--ink-dim); line-height: 1.55; }
+  .item__nota { margin: 8px 0 0; font-size: 12.5px; color: var(--ember-hot); font-family: var(--font-mono); }
+
+  .flag {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase;
+    padding: 4px 8px;
+    color: var(--ink-dim);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+  .flag--star { color: var(--dkt-char); background: var(--ember-hot); box-shadow: none; }
+  .flag--hot  { color: var(--dkt-cream); background: var(--dkt-red); box-shadow: none; }
+  .flag--chef { color: var(--ember-hot); box-shadow: inset 0 0 0 1px var(--ember-mid); }
+
+  .item__order {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--dkt-red);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity .35s var(--ease-out), transform .35s var(--ease-out), color .25s ease;
+  }
+  .item:hover .item__order, .item:focus-within .item__order { opacity: 1; transform: none; }
+  .item__order:hover { color: var(--ember-hot); }
+  @media (hover: none) { .item__order { opacity: 1; transform: none; } }
+
+  .item__price { display: flex; gap: 10px; align-items: flex-start; padding-top: 4px; }
+  .pr {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    min-width: 92px; padding: 9px 12px;
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+  .pr i {
+    font-style: normal; font-family: var(--font-mono);
+    font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .pr b { font-size: clamp(14px, 1.7vw, 17px); font-weight: 700; color: var(--dkt-cream); }
+  .pr--hot { background: var(--dkt-red); box-shadow: none; }
+  .pr--hot i { color: rgba(251,246,222,.72); }
+  .pr--solo { min-width: 0; background: var(--dkt-red); box-shadow: none; padding: 11px 16px; }
+
+  @media (max-width: 700px) {
+    .item { grid-template-columns: 34px 1fr; gap: 6px 14px; }
+    .item__price { grid-column: 2; padding-top: 14px; }
+  }
+
+  .salsas {
+    display: grid;
+    grid-template-columns: 1fr minmax(240px, 46%);
+    gap: clamp(24px, 4vw, 56px);
+    align-items: center;
+    margin: 0 0 clamp(64px, 9vw, 110px);
+    padding: clamp(26px, 4vw, 42px) 0 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .salsas__script { margin: 0 0 2px; }
+  .salsas__title {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: clamp(24px, 3.4vw, 38px);
+    letter-spacing: -.02em;
+    color: var(--dkt-cream);
+    margin: 0 0 14px;
+  }
+  .salsas__txt { margin: 0; font-size: 15px; color: var(--ink-dim); max-width: 46ch; line-height: 1.6; }
+  .salsas__nota {
+    margin: 14px 0 0;
+    font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ember-hot);
+  }
+  /* Recorte con alfa: los cuencos van sueltos sobre el fondo. */
+  .salsas__foto :global(.pic) { background: transparent; }
+  .salsas__foto :global(.pic img) {
+    object-fit: contain;
+    filter: drop-shadow(0 18px 30px rgba(0, 0, 0, .55));
+  }
+  @media (max-width: 860px) { .salsas { grid-template-columns: 1fr; } }
+
+  /* ============ UBICACIÓN ============ */
+  .loc {
+    position: relative;
+    isolation: isolate;
+    background: var(--dkt-char);
+    padding: clamp(64px, 9vw, 124px) 0;
+    overflow: hidden;
+    border-top: 1px solid var(--hairline);
+  }
+  .loc__in {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1.2fr .8fr;
+    gap: clamp(32px, 6vw, 72px); align-items: center;
+  }
+  .loc__title { font-size: clamp(34px, 6vw, 74px); margin: 16px 0 22px; color: var(--dkt-cream); }
+  .loc__addr { font-size: 16.5px; color: var(--ink-dim); margin: 0 0 30px; }
+  .loc__cta { display: flex; flex-wrap: wrap; gap: 14px; }
+  .loc__pending {
+    margin: 26px 0 0; font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  .loc__mark { color: var(--dkt-red); opacity: .16; }
+  .loc__mark :global(svg) { width: 100%; height: auto; }
+  @media (max-width: 820px) { .loc__in { grid-template-columns: 1fr; } .loc__mark { display: none; } }
+</style>
+
+<script>
+  // Resalta la categoría visible en la barra de pestañas
+  const tabs = document.querySelectorAll(".menu__tabs a");
+  const cats = document.querySelectorAll(".cat");
+  if (tabs.length && cats.length) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const id = e.target.id.replace("cat-", "");
+          tabs.forEach((t) => t.classList.toggle("is-active", t.dataset.cat === id));
+        });
+      },
+      { rootMargin: "-140px 0px -65% 0px" }
+    );
+    cats.forEach((c) => spy.observe(c));
+  }
+</script>
