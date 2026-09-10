@@ -1,0 +1,299 @@
+---
+import Pedido from "../../layouts/Pedido.astro";
+import { leer } from "../../lib/env";
+
+export const prerender = false;
+
+const config = {
+  apiKey: leer("PUBLIC_FIREBASE_API_KEY") ?? "",
+  authDomain: leer("PUBLIC_FIREBASE_AUTH_DOMAIN") ?? "",
+  projectId: leer("PUBLIC_FIREBASE_PROJECT_ID") ?? "dakota",
+  emuladorFirestore: leer("FIRESTORE_EMULATOR_HOST") ?? "",
+  emuladorAuth: leer("FIREBASE_AUTH_EMULATOR_HOST") ?? "",
+};
+---
+
+<Pedido title="Equipo — Dakota">
+  <div class="cargando" data-cargando>Conectando…</div>
+
+  <div class="entrar" data-login hidden>
+    <h1 class="entrar__t">Equipo</h1>
+    <form class="entrar__f" data-form-correo>
+      <label><span>Correo</span><input type="email" name="correo" autocomplete="username" required /></label>
+      <label><span>Contraseña</span><input type="password" name="clave" autocomplete="current-password" required /></label>
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+    <p class="entrar__o"><span>o</span></p>
+    <button class="chip entrar__g" type="button" data-google>Entrar con Google</button>
+    <p class="err" data-login-error hidden></p>
+  </div>
+
+  <div class="entrar" data-sin-permiso hidden>
+    <h1 class="entrar__t">Sin acceso</h1>
+    <p class="entrar__d" data-sin-permiso-txt></p>
+    <button class="chip" type="button" data-salir-2>Usar otra cuenta</button>
+  </div>
+
+  <div class="tablero" data-tablero hidden>
+    <header class="cab">
+      <div>
+        <p class="eyebrow">Quién entra</p>
+        <h1 class="cab__t">Equipo</h1>
+      </div>
+      <nav class="cab__nav">
+        <a class="chip" href="/pedir/cocina">Cocina</a>
+        <a class="chip" href="/pedir/ventas">Ventas</a>
+        <button class="chip" type="button" data-salir>Salir</button>
+      </nav>
+    </header>
+
+    <p class="pista">
+      Para dar acceso, la persona tiene que haber entrado antes una vez al panel
+      —aunque le dijera «sin acceso»—: eso es lo que crea su cuenta.
+    </p>
+
+    <form class="alta" data-alta>
+      <label>
+        <span>Correo de la persona</span>
+        <input type="email" name="correo" placeholder="alguien@gmail.com" required />
+      </label>
+      <label>
+        <span>Puede</span>
+        <select name="rol">
+          <option value="staff">Ver pedidos y ventas</option>
+          <option value="dueno">Todo, incluido el equipo</option>
+        </select>
+      </label>
+      <button class="btn" type="submit">Dar acceso</button>
+    </form>
+
+    <p class="err" data-error hidden></p>
+    <p class="ok" data-ok hidden></p>
+
+    <ul class="lista" data-lista></ul>
+  </div>
+
+  <script id="cfg" type="application/json" set:html={JSON.stringify(config)} />
+</Pedido>
+
+<style is:global>
+  .pista {
+    margin: 0 0 22px; max-width: 62ch;
+    font-size: 13.5px; line-height: 1.6; color: var(--ink-dim);
+    padding-left: 14px; border-left: 2px solid var(--ember-mid);
+  }
+
+  .alta {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+    gap: 12px; align-items: end;
+    padding-bottom: clamp(20px, 4vw, 28px);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .alta label { display: grid; gap: 7px; }
+  .alta span {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .alta input, .alta select {
+    padding: 13px; min-height: 48px;
+    background: var(--surface-2); border: 1px solid var(--hairline);
+    color: var(--dkt-cream); font-family: var(--font-body); font-size: 15px;
+  }
+  .alta .btn { min-height: 48px; justify-content: center; }
+  .alta .btn[disabled] { opacity: .55; cursor: progress; }
+  @media (max-width: 700px) { .alta { grid-template-columns: 1fr; } }
+
+  .ok { margin: 16px 0 0; font-size: 14px; color: var(--ember-hot); }
+
+  .lista { list-style: none; margin: clamp(24px, 4vw, 34px) 0 0; padding: 0; }
+  .lista li {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 15px 0; border-bottom: 1px solid var(--hairline);
+  }
+  .lista .quien { display: grid; gap: 3px; min-width: 0; }
+  .lista .correo { font-size: 14.5px; color: var(--dkt-cream); word-break: break-all; }
+  .lista .nombre { font-size: 12.5px; color: var(--ink-faint); }
+  .lista .rol {
+    font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: .16em; text-transform: uppercase;
+    padding: 5px 9px; color: var(--ink-dim);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+  .lista .rol--dueno { color: var(--dkt-char); background: var(--ember-hot); box-shadow: none; }
+  .lista .yo {
+    font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .lista .quitar {
+    margin-inline-start: auto; min-height: 44px; padding-inline: 15px;
+    background: transparent; border: 1px solid var(--hairline);
+    color: var(--ink-faint);
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+  }
+  .lista .quitar:hover { color: var(--dkt-red); border-color: var(--dkt-red); }
+</style>
+
+<script>
+  import { conectar, entrarConCorreo, entrarConGoogle, motivo, salir, vigilarSesion } from "../../lib/sesion-panel";
+
+  const cfg = JSON.parse(document.getElementById("cfg").textContent);
+  const { auth, db } = conectar(cfg);
+
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, clase, texto) => {
+    const n = document.createElement(tag);
+    if (clase) n.className = clase;
+    if (texto !== undefined) n.textContent = texto;
+    return n;
+  };
+
+  // ---------- sesión ----------
+  const error = $("[data-login-error]");
+
+  $("[data-form-correo]").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    error.hidden = true;
+    const d = new FormData(e.currentTarget);
+    try {
+      await entrarConCorreo(auth, d.get("correo"), d.get("clave"));
+    } catch (err) {
+      error.textContent = motivo(err) ?? "";
+      error.hidden = false;
+    }
+  });
+
+  $("[data-google]").addEventListener("click", async () => {
+    error.hidden = true;
+    try {
+      await entrarConGoogle(auth);
+    } catch (err) {
+      const m = motivo(err);
+      if (!m) return;
+      error.textContent = m;
+      error.hidden = false;
+    }
+  });
+
+  $("[data-salir]").addEventListener("click", () => salir(auth));
+  $("[data-salir-2]").addEventListener("click", () => salir(auth));
+
+  vigilarSesion(auth, db, async (estado, usuario) => {
+    $("[data-cargando]").hidden = true;
+    $("[data-login]").hidden = estado !== "fuera";
+
+    if (estado !== "dentro") {
+      $("[data-sin-permiso]").hidden = estado !== "sin-permiso";
+      $("[data-tablero]").hidden = true;
+      if (estado === "sin-permiso") {
+        $("[data-sin-permiso-txt]").textContent =
+          `La cuenta ${usuario.email ?? usuario.uid} no está autorizada. Pídele al dueño que la habilite.`;
+      }
+      return;
+    }
+
+    // Estar en /staff basta para cocina y ventas, pero no para esta pantalla:
+    // el servidor decide, y si no eres dueño responde 403.
+    const r = await llamar("GET");
+    if (r.ok) {
+      $("[data-sin-permiso]").hidden = true;
+      $("[data-tablero]").hidden = false;
+      pintar(r.datos);
+    } else {
+      $("[data-tablero]").hidden = true;
+      $("[data-sin-permiso]").hidden = false;
+      $("[data-sin-permiso-txt]").textContent = r.datos.error ?? "No puedes gestionar el equipo.";
+    }
+  });
+
+  // ---------- llamadas ----------
+  // El token viaja en la cabecera y no en una cookie: así ninguna página ajena
+  // puede provocar una acción de administración desde tu sesión abierta.
+  async function llamar(metodo, cuerpo) {
+    const token = await auth.currentUser?.getIdToken();
+    const res = await fetch("/pedir/api/equipo", {
+      method: metodo,
+      headers: {
+        authorization: `Bearer ${token ?? ""}`,
+        ...(cuerpo ? { "content-type": "application/json" } : {}),
+      },
+      body: cuerpo ? JSON.stringify(cuerpo) : undefined,
+    });
+    return { ok: res.ok, datos: await res.json().catch(() => ({})) };
+  }
+
+  // ---------- alta ----------
+  const errorPanel = $("[data-error]");
+  const okPanel = $("[data-ok]");
+
+  $("[data-alta]").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const boton = form.querySelector("button");
+    boton.disabled = true;
+    errorPanel.hidden = true;
+    okPanel.hidden = true;
+
+    const d = new FormData(form);
+    const correo = d.get("correo");
+    const r = await llamar("POST", { accion: "agregar", correo, rol: d.get("rol") });
+
+    if (r.ok) {
+      okPanel.textContent = `${correo} ya tiene acceso.`;
+      okPanel.hidden = false;
+      form.reset();
+      pintar(r.datos);
+    } else {
+      errorPanel.textContent = r.datos.error ?? "No se pudo dar acceso.";
+      errorPanel.hidden = false;
+    }
+    boton.disabled = false;
+  });
+
+  // ---------- lista ----------
+  function pintar({ equipo, yo }) {
+    const lista = $("[data-lista]");
+    lista.textContent = "";
+
+    for (const m of equipo) {
+      const li = el("li");
+
+      const quien = el("div", "quien");
+      quien.append(el("span", "correo", m.correo || m.uid));
+      if (m.nombre) quien.append(el("span", "nombre", m.nombre));
+      li.append(quien);
+
+      li.append(
+        el("span", m.rol === "dueno" ? "rol rol--dueno" : "rol",
+          m.rol === "dueno" ? "Dueño" : "Staff")
+      );
+
+      if (m.uid === yo) {
+        li.append(el("span", "yo", "tú"));
+      } else {
+        const quitar = el("button", "quitar", "Quitar");
+        quitar.type = "button";
+        quitar.addEventListener("click", async () => {
+          if (!confirm(`¿Quitarle el acceso a ${m.correo}?`)) return;
+          quitar.disabled = true;
+          errorPanel.hidden = true;
+          okPanel.hidden = true;
+          const r = await llamar("POST", { accion: "quitar", uid: m.uid });
+          if (r.ok) {
+            okPanel.textContent = `${m.correo} ya no tiene acceso.`;
+            okPanel.hidden = false;
+            pintar(r.datos);
+          } else {
+            errorPanel.textContent = r.datos.error ?? "No se pudo quitar.";
+            errorPanel.hidden = false;
+            quitar.disabled = false;
+          }
+        });
+        li.append(quitar);
+      }
+
+      lista.append(li);
+    }
+  }
+</script>
