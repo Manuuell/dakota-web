@@ -385,13 +385,25 @@ const config = {
     }
   });
 
+  // Un mensaje genérico aquí cuesta caro: el fallo típico es de configuración
+  // (el dominio sin autorizar en Firebase Auth) y sin decirlo parece un
+  // problema de red, que es justo lo que no es.
+  const MOTIVOS = {
+    "auth/unauthorized-domain":
+      `El dominio ${location.hostname} no está autorizado en Firebase Auth. ` +
+      `Añádelo en Authentication → Configuración → Dominios autorizados.`,
+    "auth/popup-blocked": "El navegador bloqueó la ventana de Google. Permite las ventanas emergentes en este sitio.",
+    "auth/network-request-failed": "Sin conexión con Firebase. Revisa la red.",
+    "auth/operation-not-allowed": "El acceso con Google no está activado en este proyecto de Firebase.",
+  };
+
   $("[data-google]").addEventListener("click", async () => {
     error.hidden = true;
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());
     } catch (e) {
-      if (e.code === "auth/popup-closed-by-user") return;
-      error.textContent = "No se pudo entrar. Revisa la conexión e inténtalo otra vez.";
+      if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
+      error.textContent = MOTIVOS[e.code] ?? `No se pudo entrar (${e.code ?? "error desconocido"}).`;
       error.hidden = false;
     }
   });
