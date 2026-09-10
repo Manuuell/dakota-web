@@ -1,0 +1,67 @@
+---
+import "../styles/global.css";
+import Mark from "../components/Mark.astro";
+
+interface Props {
+  title: string;
+  mesa?: string;
+}
+const { title, mesa } = Astro.props as Props;
+---
+
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="theme-color" content="#151516" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/brand/dkt.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Caveat+Brush&family=Montserrat:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+    />
+  </head>
+  <body>
+    <header class="barra">
+      <a class="barra__mark" href="/" aria-label="Dakota Smokehouse"><Mark /></a>
+      {mesa && <p class="barra__mesa num">Mesa <b>{mesa}</b></p>}
+    </header>
+
+    <main><slot /></main>
+
+    <style>
+      .barra {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: 58px;
+        padding-inline: var(--gutter);
+        background: rgba(21, 21, 22, .92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--hairline);
+      }
+      .barra__mark { color: var(--dkt-cream); display: block; }
+      .barra__mark :global(svg) { height: 22px; width: auto; }
+      .barra__mesa {
+        margin: 0;
+        font-size: 11px;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        color: var(--ink-dim);
+      }
+      .barra__mesa b {
+        color: var(--dkt-cream);
+        font-size: 14px;
+        margin-inline-start: 6px;
+      }
+    </style>
+  </body>
+</html>
