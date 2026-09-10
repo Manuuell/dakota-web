@@ -1,0 +1,207 @@
+---
+import Pedido from "../../../layouts/Pedido.astro";
+import { mesaActual } from "../../../lib/mesa";
+import { cuentaDeMesa, pedidoPorId, type Estado } from "../../../lib/pedidos";
+import { cop } from "../../../lib/carta";
+
+export const prerender = false;
+
+const mesa = await mesaActual(Astro.cookies);
+const pedido = await pedidoPorId(Astro.params.id!);
+
+// El id de Firestore ya es imposible de adivinar, pero además se exige que el
+// pedido sea de la mesa que tiene abierta esta sesión: así el enlace no sirve
+// desde otra mesa y sí desde el móvil de quien te acompaña.
+if (!mesa || !pedido || pedido.mesaId !== mesa.id) {
+  return Astro.redirect("/pedir/", 302);
+}
+
+const cuenta = await cuentaDeMesa(mesa.id);
+const totalMesa = cuenta.reduce((s, p) => s + p.totalCop, 0);
+
+const PASOS: { estado: Estado; texto: string }[] = [
+  { estado: "recibido", texto: "Recibido" },
+  { estado: "preparando", texto: "En el fuego" },
+  { estado: "listo", texto: "Listo" },
+];
+const indice = PASOS.findIndex((p) => p.estado === pedido.estado);
+---
+
+<Pedido title={`Pedido #${pedido.numero} — Dakota`} mesa={mesa.etiqueta}>
+  <div class="ped">
+    <p class="eyebrow">Pedido #{pedido.numero}</p>
+    <h1 class="ped__t" data-titulo>
+      {pedido.estado === "cancelado"
+        ? "Pedido cancelado"
+        : pedido.estado === "entregado"
+          ? "Servido"
+          : PASOS[Math.max(indice, 0)].texto}
+    </h1>
+
+    {pedido.estado !== "cancelado" && (
+      <ol class="pasos" data-pasos data-actual={Math.max(indice, 0)}>
+        {PASOS.map((p, i) => (
+          <li class:list={["paso", i <= indice && "paso--ok"]}>
+            <span class="paso__p" aria-hidden="true"></span>
+            <span class="paso__t">{p.texto}</span>
+          </li>
+        ))}
+      </ol>
+    )}
+
+    <section class="bloque">
+      <h2 class="bloque__t">Lo que pediste</h2>
+      <ul class="items">
+        {pedido.items.map((i) => (
+          <li>
+            <span class="items__c num">{i.cantidad}×</span>
+            <span class="items__n">
+              {i.nombre}
+              {i.conPapa && <em>con papa</em>}
+              {i.nota && <i>{i.nota}</i>}
+            </span>
+            <b class="items__p num">{cop(i.precioCop * i.cantidad)}</b>
+          </li>
+        ))}
+      </ul>
+      {pedido.nota && <p class="ped__nota">“{pedido.nota}”</p>}
+    </section>
+
+    <section class="bloque">
+      <h2 class="bloque__t">La cuenta de la mesa</h2>
+      <ul class="rondas">
+        {cuenta.map((p) => (
+          <li>
+            <span>
+              Pedido #{p.numero}
+              {p.id === pedido.id && <em>este</em>}
+            </span>
+            <b class="num">{cop(p.totalCop)}</b>
+          </li>
+        ))}
+      </ul>
+
+      <div class="cierre">
+        <span>Total mesa {mesa.etiqueta}</span>
+        <b class="num" data-total-mesa>{cop(totalMesa)}</b>
+      </div>
+
+      <p class="ped__pago">
+        Se paga al mesero — efectivo, Nequi o tarjeta. Puedes seguir pidiendo:
+        todo se suma a esta misma cuenta.
+      </p>
+      <a class="btn btn--ghost ped__mas" href="/pedir/">Pedir algo más</a>
+    </section>
+  </div>
+</Pedido>
+
+<style>
+  .ped { padding: clamp(24px, 6vw, 40px) var(--gutter) 70px; max-width: 620px; }
+  .ped__t { font-size: clamp(34px, 9vw, 58px); color: var(--dkt-cream); margin: 12px 0 0; }
+
+  .pasos { list-style: none; display: flex; gap: 0; margin: 30px 0 0; padding: 0; }
+  .paso { flex: 1; display: flex; flex-direction: column; gap: 9px; }
+  .paso__p { height: 4px; background: var(--surface-3); display: block; }
+  .paso--ok .paso__p { background: var(--dkt-red); }
+  .paso__t {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .paso--ok .paso__t { color: var(--ember-hot); }
+  .paso + .paso { margin-inline-start: 4px; }
+
+  .bloque { margin-top: clamp(34px, 7vw, 52px); }
+  .bloque__t {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 10.5px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 0 0 14px;
+  }
+
+  .items, .rondas { list-style: none; margin: 0; padding: 0; }
+  .items li, .rondas li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--hairline);
+    align-items: baseline;
+  }
+  .rondas li { grid-template-columns: 1fr auto; }
+  .items__c { color: var(--ember-hot); font-size: 13px; }
+  .items__n { color: var(--dkt-cream); font-size: 14.5px; }
+  .items__n em, .rondas em {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-inline-start: 8px;
+  }
+  .items__n i { display: block; font-style: normal; font-size: 12.5px; color: var(--ink-dim); }
+  .items__p, .rondas b { color: var(--dkt-cream); font-size: 14px; font-weight: 700; }
+  .rondas span { color: var(--ink-dim); font-size: 14.5px; }
+
+  .ped__nota { margin: 14px 0 0; font-size: 14px; color: var(--ember-hot); font-style: italic; }
+
+  .cierre {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 20px; padding-top: 18px;
+    border-top: 2px solid var(--dkt-red);
+  }
+  .cierre span {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .cierre b { font-size: clamp(28px, 7vw, 38px); color: var(--dkt-cream); }
+
+  .ped__pago { margin: 18px 0 0; font-size: 13.5px; color: var(--ink-dim); line-height: 1.55; }
+  .ped__mas { margin-top: 22px; }
+</style>
+
+<script>
+  const id = location.pathname.split("/").pop();
+
+  const TITULOS = {
+    recibido: "Recibido",
+    preparando: "En el fuego",
+    listo: "Listo",
+    entregado: "Servido",
+    cancelado: "Pedido cancelado",
+  };
+
+  const titulo = document.querySelector("[data-titulo]");
+  const pasos = document.querySelector("[data-pasos]");
+  const totalEl = document.querySelector("[data-total-mesa]");
+  const orden = ["recibido", "preparando", "listo"];
+
+  async function refrescar() {
+    const res = await fetch(`/pedir/api/pedido/${id}`, { cache: "no-store" });
+    if (!res.ok) return;
+    const d = await res.json();
+
+    titulo.textContent = TITULOS[d.estado] ?? titulo.textContent;
+    totalEl.textContent = "$" + new Intl.NumberFormat("es-CO").format(d.totalMesa);
+
+    if (pasos) {
+      const hasta = orden.indexOf(d.estado);
+      pasos.querySelectorAll(".paso").forEach((li, i) => {
+        li.classList.toggle("paso--ok", hasta >= 0 ? i <= hasta : true);
+      });
+    }
+  }
+
+  // Sondeo en vez de conexión en vivo: el comensal no necesita el SDK de
+  // Firebase para ver tres cambios de estado en veinte minutos.
+  setInterval(refrescar, 6000);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) refrescar();
+  });
+</script>
