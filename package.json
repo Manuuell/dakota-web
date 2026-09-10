@@ -9,7 +9,11 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^5.13.0"
+    "@astrojs/node": "^9.5.5",
+    "astro": "^5.13.0",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.3.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "sharp": "^0.35.4"
