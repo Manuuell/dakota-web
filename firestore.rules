@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// El comensal nunca habla con Firestore: su flujo entero (carta, pedido,
+// cuenta) pasa por las rutas API de Astro, que usan el Admin SDK y no pasan
+// por estas reglas. Así que lo único que se decide aquí es qué puede hacer un
+// navegador conectado directamente — y el único que lo hace es /panel.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Estar autenticado NO basta. Con el acceso por Google, cualquiera con una
+    // cuenta de Google puede autenticarse; autorizado es solo quien tenga su
+    // documento en /staff, que se crea a mano con scripts/staff.mjs.
+    function esStaff() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+    }
+
+    match /staff/{uid} {
+      // Cada uno puede comprobar si está autorizado, para que el panel sepa
+      // qué mensaje mostrar. Darse de alta solo se hace desde el servidor.
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+
+    match /pedidos/{pedido} {
+      allow read: if esStaff();
+
+      // La cocina mueve el estado y marca el cobro; no puede tocar los
+      // importes. Sin este hasOnly, una sesión de staff robada podría
+      // reescribir el total de un pedido ya servido.
+      allow update: if esStaff()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['estado', 'pagado', 'cerradoEn']);
+
+      // Los pedidos los crea el servidor al confirmar en la mesa, y no se
+      // borran: un pedido equivocado se cancela, que deja rastro.
+      allow create, delete: if false;
+    }
+
+    match /mesas/{mesa} {
+      allow read: if esStaff();
+      allow write: if false;
+    }
+
+    // Contadores del consecutivo diario: solo el servidor.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
