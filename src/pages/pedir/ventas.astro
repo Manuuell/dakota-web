@@ -1,0 +1,619 @@
+---
+import Pedido from "../../layouts/Pedido.astro";
+import { leer } from "../../lib/env";
+
+export const prerender = false;
+
+const config = {
+  apiKey: leer("PUBLIC_FIREBASE_API_KEY") ?? "",
+  authDomain: leer("PUBLIC_FIREBASE_AUTH_DOMAIN") ?? "",
+  projectId: leer("PUBLIC_FIREBASE_PROJECT_ID") ?? "dakota",
+  emuladorFirestore: leer("FIRESTORE_EMULATOR_HOST") ?? "",
+  emuladorAuth: leer("FIREBASE_AUTH_EMULATOR_HOST") ?? "",
+};
+---
+
+<Pedido title="Ventas — Dakota">
+  <div class="cargando" data-cargando>Conectando…</div>
+
+  <div class="entrar" data-login hidden>
+    <h1 class="entrar__t">Ventas</h1>
+    <form class="entrar__f" data-form-correo>
+      <label><span>Correo</span><input type="email" name="correo" autocomplete="username" required /></label>
+      <label><span>Contraseña</span><input type="password" name="clave" autocomplete="current-password" required /></label>
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+    <p class="entrar__o"><span>o</span></p>
+    <button class="chip entrar__g" type="button" data-google>Entrar con Google</button>
+    <p class="err" data-login-error hidden></p>
+  </div>
+
+  <div class="entrar" data-sin-permiso hidden>
+    <h1 class="entrar__t">Sin acceso</h1>
+    <p class="entrar__d">La cuenta <b data-quien></b> no está autorizada. Pídele al dueño que la habilite.</p>
+    <button class="chip" type="button" data-salir-2>Usar otra cuenta</button>
+  </div>
+
+  <div class="tablero" data-tablero hidden>
+    <header class="cab">
+      <div>
+        <p class="eyebrow">El negocio</p>
+        <h1 class="cab__t">Ventas</h1>
+      </div>
+      <nav class="cab__nav">
+        <a class="chip" href="/pedir/cocina">Cocina</a>
+        <button class="chip" type="button" data-salir>Salir</button>
+      </nav>
+    </header>
+
+    <!-- Una sola fila de filtros, arriba de todo lo que afecta. -->
+    <div class="periodos" role="group" aria-label="Periodo">
+      <button class="per" type="button" data-per="hoy" aria-pressed="true">Hoy</button>
+      <button class="per" type="button" data-per="7" aria-pressed="false">7 días</button>
+      <button class="per" type="button" data-per="30" aria-pressed="false">30 días</button>
+      <button class="per" type="button" data-per="todo" aria-pressed="false">Todo</button>
+    </div>
+
+    <div class="datos" data-datos>
+      <section class="hero">
+        <p class="hero__l" data-hero-label>Vendido hoy</p>
+        <p class="hero__v" data-total>$0</p>
+        <p class="hero__n num" data-rango></p>
+      </section>
+
+      <ul class="tiles">
+        <li><span>Pedidos</span><b data-pedidos>0</b></li>
+        <li><span>Ticket medio</span><b data-ticket>$0</b></li>
+        <li><span>Platos servidos</span><b data-platos>0</b></li>
+        <li class="tile--pend"><span>Sin cobrar</span><b data-pendiente>$0</b></li>
+      </ul>
+
+      <section class="bloque">
+        <div class="bloque__cab">
+          <h2 class="bloque__t" data-grafica-t>Ventas por hora</h2>
+          <button class="verlo" type="button" data-ver="dias" aria-expanded="false">Ver tabla</button>
+        </div>
+        <div class="grafica" data-grafica></div>
+        <p class="vacio" data-sin-datos hidden>Todavía no hay ventas en este periodo.</p>
+        <div class="tabla" data-tabla-dias hidden></div>
+      </section>
+
+      <section class="bloque">
+        <div class="bloque__cab">
+          <h2 class="bloque__t">Lo que más sale</h2>
+          <div class="bloque__acc">
+            <div class="medida" role="group" aria-label="Medida">
+              <button class="per" type="button" data-med="unidades" aria-pressed="true">Unidades</button>
+              <button class="per" type="button" data-med="ingresos" aria-pressed="false">Ingresos</button>
+            </div>
+            <button class="verlo" type="button" data-ver="prods" aria-expanded="false">Ver tabla</button>
+          </div>
+        </div>
+        <ol class="rank" data-rank></ol>
+        <div class="tabla" data-tabla-prods hidden></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="tip" data-tip hidden role="status"></div>
+
+  <script id="cfg" type="application/json" set:html={JSON.stringify(config)} />
+</Pedido>
+
+<style is:global>
+  /* Global porque las gráficas y la tabla se pintan con createElement, y el CSS
+     con alcance de Astro solo llega a lo que viene en la plantilla. */
+
+  .cargando, .vacio { padding: 34px var(--gutter); color: var(--ink-dim); font-size: 15px; }
+
+  .entrar { max-width: 380px; margin: clamp(40px, 10vw, 90px) auto; padding-inline: var(--gutter); display: grid; gap: 16px; }
+  .entrar__t { font-size: 42px; color: var(--dkt-cream); margin: 0 0 6px; }
+  .entrar__d { margin: 0; font-size: 14.5px; color: var(--ink-dim); line-height: 1.55; }
+  .entrar__d b { color: var(--dkt-cream); }
+  .entrar .btn { justify-content: center; margin-top: 6px; }
+  .entrar__f { display: grid; gap: 14px; }
+  .entrar__f label { display: grid; gap: 7px; }
+  .entrar__f span {
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .entrar__f input {
+    padding: 13px; background: var(--surface-2); border: 1px solid var(--hairline);
+    color: var(--dkt-cream); font-family: var(--font-body); font-size: 16px;
+  }
+  .entrar__o {
+    display: flex; align-items: center; gap: 14px; margin: 4px 0;
+    color: var(--ink-faint); font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  }
+  .entrar__o::before, .entrar__o::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+  .entrar__g { justify-self: stretch; text-align: center; }
+  .err { margin: 0; font-size: 14px; color: var(--ember-hot); }
+
+  .chip {
+    display: inline-flex; align-items: center;
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: .14em; text-transform: uppercase;
+    padding: 10px 14px; min-height: 40px;
+    background: transparent; color: var(--ink-dim);
+    border: 1px solid var(--hairline); cursor: pointer;
+  }
+  .chip:hover { color: var(--dkt-cream); border-color: var(--ink-faint); }
+
+  .tablero { padding: clamp(20px, 4vw, 34px) var(--gutter) 80px; max-width: 1100px; margin-inline: auto; }
+  .cab {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 18px; flex-wrap: wrap; margin-bottom: clamp(20px, 4vw, 30px);
+  }
+  .cab__t { font-size: clamp(34px, 7vw, 56px); color: var(--dkt-cream); margin: 10px 0 0; }
+  .cab__nav { display: flex; gap: 8px; }
+
+  .periodos, .medida { display: flex; gap: 6px; flex-wrap: wrap; }
+  .periodos { margin-bottom: clamp(24px, 4vw, 38px); }
+  .per {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .14em; text-transform: uppercase;
+    padding: 10px 15px; min-height: 42px;
+    background: transparent; color: var(--ink-dim);
+    border: 1px solid var(--hairline); cursor: pointer;
+    transition: color .2s ease, background .2s ease, border-color .2s ease;
+  }
+  .per:hover { color: var(--dkt-cream); }
+  .per[aria-pressed="true"] { background: var(--dkt-red); border-color: var(--dkt-red); color: var(--dkt-cream); }
+
+  /* Mientras se recarga se mantiene lo anterior atenuado, sin saltos de maqueta. */
+  .datos { transition: opacity .2s ease; }
+  .datos[data-cargando-datos] { opacity: .45; }
+
+  /* ---------- la cifra que manda ---------- */
+  .hero { padding: 4px 0 clamp(22px, 4vw, 32px); }
+  .hero__l {
+    margin: 0; font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  /* Sans de la casa y cifras proporcionales: en tamaño display, tabular-nums
+     deja los números sueltos y flojos. */
+  .hero__v {
+    margin: 8px 0 0;
+    font-family: var(--font-body); font-weight: 800;
+    font-size: clamp(46px, 11vw, 82px); line-height: 1;
+    letter-spacing: -.02em; color: var(--dkt-cream);
+    font-variant-numeric: proportional-nums;
+  }
+  .hero__n { margin: 10px 0 0; font-size: 11.5px; color: var(--ink-faint); letter-spacing: .1em; text-transform: uppercase; }
+
+  .tiles {
+    list-style: none; margin: 0 0 clamp(30px, 5vw, 46px); padding: 0;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px; background: var(--hairline);
+    border: 1px solid var(--hairline);
+  }
+  .tiles li { background: var(--surface); padding: 16px 18px; display: grid; gap: 7px; }
+  .tiles span {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .tiles b {
+    font-family: var(--font-body); font-weight: 800; font-size: 24px;
+    color: var(--dkt-cream); font-variant-numeric: proportional-nums;
+  }
+  .tile--pend b { color: var(--ember-hot); }
+
+  .bloque { margin-bottom: clamp(34px, 6vw, 54px); }
+  .bloque__cab {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .bloque__acc { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .bloque__t {
+    font-family: var(--font-display); text-transform: uppercase;
+    font-size: clamp(19px, 3.4vw, 26px); letter-spacing: -.02em;
+    color: var(--dkt-cream); margin: 0;
+  }
+  .verlo {
+    background: none; border: 0; cursor: pointer; padding: 6px 0;
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-dim); text-decoration: underline; text-underline-offset: 4px;
+  }
+  .verlo:hover { color: var(--ember-hot); }
+
+  /* ---------- columnas por periodo ---------- */
+  /* La altura incluye la banda del eje: si se fija solo el área de trazado,
+     las etiquetas quedan fuera y la tarjeta se llena de scroll. */
+  .grafica {
+    position: relative;
+    display: flex; align-items: flex-end; gap: 2px;
+    height: 210px; padding-top: 26px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .col {
+    flex: 1 1 0; min-width: 0;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    align-self: stretch;
+    background: none; border: 0; padding: 0; cursor: default;
+    position: relative;
+  }
+  .col__b {
+    width: 100%; max-width: 24px; margin-inline: auto;
+    background: var(--dkt-red);
+    border-radius: 4px 4px 0 0;
+    min-height: 2px;
+    transition: background .18s ease;
+  }
+  .col:hover .col__b, .col:focus-visible .col__b { background: var(--ember-hot); }
+  .col__pico {
+    position: absolute; inset-inline: 0; top: 2px;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--ink-dim); text-align: center;
+    white-space: nowrap;
+  }
+  .ejex {
+    display: flex; gap: 2px; margin-top: 8px;
+  }
+  .ejex span {
+    flex: 1 1 0; min-width: 0;
+    font-family: var(--font-mono); font-size: 9.5px;
+    letter-spacing: .06em; color: var(--ink-faint);
+    text-align: center; overflow: hidden; white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- ranking de productos ---------- */
+  /* Un solo color para todas las barras: los platos no tienen orden natural, y
+     teñir de más oscuro al más vendido repetiría en el tono lo que ya dice el
+     largo de la barra. */
+  .rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .rank li {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 4px 14px; align-items: baseline;
+    padding: 9px 0;
+  }
+  .rank__n { font-size: 14px; color: var(--dkt-cream); }
+  .rank__v {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+    color: var(--dkt-cream); font-variant-numeric: tabular-nums;
+  }
+  .rank__pista { grid-column: 1 / -1; height: 8px; background: var(--surface-3); }
+  .rank__barra { height: 100%; background: var(--dkt-red); border-radius: 0 4px 4px 0; }
+  .rank li:hover .rank__barra { background: var(--ember-hot); }
+
+  /* ---------- tabla gemela ---------- */
+  .tabla { margin-top: 20px; overflow-x: auto; }
+  .tabla table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .tabla th, .tabla td {
+    text-align: left; padding: 9px 12px 9px 0;
+    border-bottom: 1px solid var(--hairline);
+    white-space: nowrap;
+  }
+  .tabla th {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-dim); font-weight: 400;
+  }
+  .tabla td { color: var(--dkt-cream); }
+  .tabla td.n, .tabla th.n { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  /* ---------- globo ---------- */
+  .tip {
+    position: fixed; z-index: 90;
+    padding: 9px 12px;
+    background: var(--dkt-char);
+    border: 1px solid var(--hairline);
+    color: var(--dkt-cream);
+    font-family: var(--font-mono); font-size: 11.5px;
+    pointer-events: none; white-space: nowrap;
+    transform: translate(-50%, -100%);
+  }
+  .tip b { color: var(--ember-hot); }
+</style>
+
+<script>
+  import { conectar, entrarConCorreo, entrarConGoogle, motivo, salir, vigilarSesion } from "../../lib/sesion-panel";
+  import { collection, getDocs, query, where, Timestamp } from "firebase/firestore";
+
+  const cfg = JSON.parse(document.getElementById("cfg").textContent);
+  const { auth, db } = conectar(cfg);
+
+  const $ = (s) => document.querySelector(s);
+  const pesos = (n) => "$" + new Intl.NumberFormat("es-CO").format(Math.round(n));
+  const corto = (n) =>
+    n >= 1_000_000 ? "$" + (n / 1_000_000).toFixed(1).replace(".0", "") + "M"
+    : n >= 1000 ? "$" + Math.round(n / 1000) + "k"
+    : "$" + n;
+
+  const el = (tag, clase, texto) => {
+    const n = document.createElement(tag);
+    if (clase) n.className = clase;
+    if (texto !== undefined) n.textContent = texto;
+    return n;
+  };
+
+  // ---------- sesión ----------
+  const error = $("[data-login-error]");
+
+  $("[data-form-correo]").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    error.hidden = true;
+    const d = new FormData(e.currentTarget);
+    try {
+      await entrarConCorreo(auth, d.get("correo"), d.get("clave"));
+    } catch (err) {
+      error.textContent = motivo(err) ?? "";
+      error.hidden = false;
+    }
+  });
+
+  $("[data-google]").addEventListener("click", async () => {
+    error.hidden = true;
+    try {
+      await entrarConGoogle(auth);
+    } catch (err) {
+      const m = motivo(err);
+      if (!m) return;
+      error.textContent = m;
+      error.hidden = false;
+    }
+  });
+
+  $("[data-salir]").addEventListener("click", () => salir(auth));
+  $("[data-salir-2]").addEventListener("click", () => salir(auth));
+
+  vigilarSesion(auth, db, (estado, usuario) => {
+    $("[data-cargando]").hidden = true;
+    $("[data-login]").hidden = estado !== "fuera";
+    $("[data-sin-permiso]").hidden = estado !== "sin-permiso";
+    $("[data-tablero]").hidden = estado !== "dentro";
+
+    if (estado === "sin-permiso") $("[data-quien]").textContent = usuario.email ?? usuario.uid;
+    if (estado === "dentro") cargar();
+  });
+
+  // ---------- periodo ----------
+  let periodo = "hoy";
+  let medida = "unidades";
+  let ultimo = null;
+
+  const BOGOTA = "America/Bogota";
+  const diaDe = (d) => new Intl.DateTimeFormat("en-CA", { timeZone: BOGOTA }).format(d);
+  const horaDe = (d) =>
+    Number(new Intl.DateTimeFormat("es-CO", { timeZone: BOGOTA, hour: "2-digit", hour12: false }).format(d));
+
+  function desdeCuando() {
+    const ahora = new Date();
+    if (periodo === "todo") return null;
+    if (periodo === "hoy") return new Date(`${diaDe(ahora)}T00:00:00-05:00`);
+    const dias = Number(periodo);
+    const d = new Date(ahora);
+    d.setDate(d.getDate() - (dias - 1));
+    return new Date(`${diaDe(d)}T00:00:00-05:00`);
+  }
+
+  document.querySelectorAll("[data-per]").forEach((b) =>
+    b.addEventListener("click", () => {
+      periodo = b.dataset.per;
+      document.querySelectorAll("[data-per]").forEach((o) =>
+        o.setAttribute("aria-pressed", String(o === b))
+      );
+      cargar();
+    })
+  );
+
+  document.querySelectorAll("[data-med]").forEach((b) =>
+    b.addEventListener("click", () => {
+      medida = b.dataset.med;
+      document.querySelectorAll("[data-med]").forEach((o) =>
+        o.setAttribute("aria-pressed", String(o === b))
+      );
+      if (ultimo) pintarRank(ultimo);
+    })
+  );
+
+  document.querySelectorAll("[data-ver]").forEach((b) =>
+    b.addEventListener("click", () => {
+      const destino = $(`[data-tabla-${b.dataset.ver}]`);
+      destino.hidden = !destino.hidden;
+      b.setAttribute("aria-expanded", String(!destino.hidden));
+      b.textContent = destino.hidden ? "Ver tabla" : "Ocultar tabla";
+    })
+  );
+
+  // ---------- datos ----------
+  async function cargar() {
+    const caja = $("[data-datos]");
+    caja.setAttribute("data-cargando-datos", "");
+
+    const desde = desdeCuando();
+    const ref = collection(db, "pedidos");
+    const consulta = desde
+      ? query(ref, where("creadoEn", ">=", Timestamp.fromDate(desde)))
+      : query(ref);
+
+    const snap = await getDocs(consulta);
+    const pedidos = snap.docs
+      .map((d) => d.data())
+      .filter((p) => p.estado !== "cancelado" && p.creadoEn?.toDate);
+
+    ultimo = agregar(pedidos);
+    pintar(ultimo);
+    caja.removeAttribute("data-cargando-datos");
+  }
+
+  const precioUnidad = (it) =>
+    it.precioCop + (it.adiciones ?? []).reduce((s, a) => s + a.precio, 0);
+
+  function agregar(pedidos) {
+    const porTramo = new Map();
+    const porProducto = new Map();
+    let total = 0;
+    let platos = 0;
+    let pendiente = 0;
+
+    for (const p of pedidos) {
+      const fecha = p.creadoEn.toDate();
+      total += p.totalCop;
+      if (!p.cerradoEn) pendiente += p.totalCop;
+
+      const clave = periodo === "hoy" ? String(horaDe(fecha)).padStart(2, "0") : diaDe(fecha);
+      porTramo.set(clave, (porTramo.get(clave) ?? 0) + p.totalCop);
+
+      for (const it of p.items ?? []) {
+        platos += it.cantidad;
+        const e = porProducto.get(it.productoId) ?? { nombre: it.nombre, unidades: 0, ingresos: 0 };
+        e.unidades += it.cantidad;
+        e.ingresos += precioUnidad(it) * it.cantidad;
+        porProducto.set(it.productoId, e);
+      }
+    }
+
+    return {
+      total,
+      platos,
+      pendiente,
+      pedidos: pedidos.length,
+      tramos: [...porTramo].sort((a, b) => a[0].localeCompare(b[0])),
+      productos: [...porProducto.values()],
+    };
+  }
+
+  // ---------- pintado ----------
+  function pintar(d) {
+    const etiquetas = { hoy: "Vendido hoy", 7: "Vendido en 7 días", 30: "Vendido en 30 días", todo: "Vendido en total" };
+    $("[data-hero-label]").textContent = etiquetas[periodo];
+    $("[data-total]").textContent = pesos(d.total);
+    $("[data-rango]").textContent =
+      d.pedidos === 0 ? "sin pedidos" : `${d.pedidos} ${d.pedidos === 1 ? "pedido" : "pedidos"}`;
+    $("[data-pedidos]").textContent = String(d.pedidos);
+    $("[data-ticket]").textContent = pesos(d.pedidos ? d.total / d.pedidos : 0);
+    $("[data-platos]").textContent = String(d.platos);
+    $("[data-pendiente]").textContent = pesos(d.pendiente);
+    $("[data-grafica-t]").textContent = periodo === "hoy" ? "Ventas por hora" : "Ventas por día";
+
+    pintarGrafica(d);
+    pintarRank(d);
+    pintarTablaTramos(d);
+  }
+
+  function pintarGrafica(d) {
+    const g = $("[data-grafica]");
+    g.textContent = "";
+    const eje = document.querySelector(".ejex");
+    eje?.remove();
+
+    $("[data-sin-datos]").hidden = d.tramos.length > 0;
+    if (!d.tramos.length) return;
+
+    const max = Math.max(...d.tramos.map(([, v]) => v));
+    const bandaEje = el("div", "ejex");
+
+    for (const [clave, valor] of d.tramos) {
+      const col = el("button", "col");
+      col.type = "button";
+      const barra = el("div", "col__b");
+      barra.style.height = `${Math.max(2, (valor / max) * 100)}%`;
+
+      // Etiqueta directa solo en el extremo: un número sobre cada barra es ruido.
+      if (valor === max) col.append(el("span", "col__pico", corto(valor)));
+      col.append(barra);
+
+      const cuando = periodo === "hoy" ? `${clave}:00` : clave;
+      col.addEventListener("pointerenter", (e) => globo(e, cuando, pesos(valor)));
+      col.addEventListener("focus", (e) => globo(e, cuando, pesos(valor)));
+      col.addEventListener("pointerleave", cerrarGlobo);
+      col.addEventListener("blur", cerrarGlobo);
+
+      g.append(col);
+      bandaEje.append(el("span", null, periodo === "hoy" ? clave : clave.slice(8)));
+    }
+
+    g.after(bandaEje);
+  }
+
+  function pintarRank(d) {
+    const lista = $("[data-rank]");
+    lista.textContent = "";
+
+    const orden = [...d.productos].sort((a, b) => b[medida] - a[medida]).slice(0, 12);
+    const max = orden.length ? orden[0][medida] : 1;
+
+    for (const p of orden) {
+      const li = el("li");
+      li.append(el("span", "rank__n", p.nombre));
+      li.append(
+        el("b", "rank__v", medida === "unidades" ? `${p.unidades}` : pesos(p.ingresos))
+      );
+      const pista = el("div", "rank__pista");
+      const barra = el("div", "rank__barra");
+      barra.style.width = `${Math.max(1.5, (p[medida] / max) * 100)}%`;
+      pista.append(barra);
+      li.append(pista);
+
+      li.addEventListener("pointerenter", (e) =>
+        globo(e, p.nombre, `${p.unidades} uds · ${pesos(p.ingresos)}`)
+      );
+      li.addEventListener("pointerleave", cerrarGlobo);
+
+      lista.append(li);
+    }
+
+    pintarTablaProductos(d);
+  }
+
+  function tabla(cabeceras, filas) {
+    const t = el("table");
+    const thead = el("thead");
+    const trh = el("tr");
+    cabeceras.forEach((c, i) => {
+      const th = el("th", i > 0 ? "n" : null, c);
+      trh.append(th);
+    });
+    thead.append(trh);
+    const tbody = el("tbody");
+    for (const fila of filas) {
+      const tr = el("tr");
+      fila.forEach((v, i) => tr.append(el("td", i > 0 ? "n" : null, String(v))));
+      tbody.append(tr);
+    }
+    t.append(thead, tbody);
+    return t;
+  }
+
+  function pintarTablaTramos(d) {
+    const c = $("[data-tabla-dias]");
+    c.textContent = "";
+    c.append(
+      tabla(
+        [periodo === "hoy" ? "Hora" : "Día", "Vendido"],
+        d.tramos.map(([k, v]) => [periodo === "hoy" ? `${k}:00` : k, pesos(v)])
+      )
+    );
+  }
+
+  function pintarTablaProductos(d) {
+    const c = $("[data-tabla-prods]");
+    c.textContent = "";
+    c.append(
+      tabla(
+        ["Plato", "Unidades", "Ingresos"],
+        [...d.productos]
+          .sort((a, b) => b[medida] - a[medida])
+          .map((p) => [p.nombre, p.unidades, pesos(p.ingresos)])
+      )
+    );
+  }
+
+  // ---------- globo ----------
+  const tip = $("[data-tip]");
+
+  function globo(e, titulo, valor) {
+    tip.textContent = "";
+    tip.append(document.createTextNode(titulo + "  "));
+    tip.append(el("b", null, valor));
+    tip.hidden = false;
+    const r = e.currentTarget.getBoundingClientRect();
+    tip.style.left = `${r.left + r.width / 2}px`;
+    tip.style.top = `${r.top - 8}px`;
+  }
+
+  const cerrarGlobo = () => { tip.hidden = true; };
+</script>
