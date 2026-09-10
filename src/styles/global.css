@@ -40,6 +40,11 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* El `display` de una regla propia le gana al `display: none` que el atributo
+   hidden trae del navegador. Sin esto, todo lo que se oculta con `el.hidden`
+   y además es flex o grid se queda a la vista. */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
