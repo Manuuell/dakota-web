@@ -1,0 +1,312 @@
+---
+import Pedido from "../../layouts/Pedido.astro";
+import menu from "../../data/menu.json";
+import { mesaActual } from "../../lib/mesa";
+import { cop } from "../../lib/carta";
+
+export const prerender = false;
+
+const mesa = await mesaActual(Astro.cookies);
+const qrInvalido = Astro.url.searchParams.get("qr") === "invalido";
+const WHATSAPP = "573189585000";
+
+// Los precios se repiten en el cliente solo para pintar el total del carrito
+// mientras se toca. El que manda sigue siendo el del servidor: /api/pedido los
+// vuelve a calcular desde menu.json y descarta lo que llegue del navegador.
+const precios = Object.fromEntries(
+  menu.categorias.flatMap((c) =>
+    c.productos.map((p) => [p.id, { n: p.nombre, p: p.precio, pp: p.precioPapa ?? null }])
+  )
+);
+---
+
+<Pedido title="Carta — Dakota Smokehouse" mesa={mesa?.etiqueta}>
+  {!mesa && (
+    <aside class="aviso">
+      <p class="aviso__t">{qrInvalido ? "Ese código ya no está activo" : "No estás en una mesa"}</p>
+      <p class="aviso__d">
+        Escanea el QR de tu mesa para pedir desde aquí. Mientras tanto puedes
+        hacer tu pedido por WhatsApp.
+      </p>
+      <a class="btn" href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener">
+        Pedir por WhatsApp
+      </a>
+    </aside>
+  )}
+
+  <nav class="cats" aria-label="Categorías">
+    {menu.categorias.map((c) => <a href={`#c-${c.id}`}>{c.nombre}</a>)}
+  </nav>
+
+  {menu.categorias.map((c) => (
+    <section class="cat" id={`c-${c.id}`}>
+      <h2 class="cat__t">{c.nombre}</h2>
+
+      <ul class="lista">
+        {c.productos.map((p) => (
+          <li class="prod">
+            <div class="prod__cab">
+              <h3 class="prod__n">{p.nombre}</h3>
+              {p.desc && <p class="prod__d">{p.desc}</p>}
+            </div>
+
+            {mesa ? (
+              <div class="vars">
+                <div class="var" data-id={p.id} data-papa="0">
+                  {p.precioPapa && <span class="var__et">Sin papa</span>}
+                  <b class="num var__p">{cop(p.precio)}</b>
+                  <button class="add" type="button" data-accion="mas">Añadir</button>
+                  <div class="paso" hidden>
+                    <button type="button" data-accion="menos" aria-label={`Quitar un ${p.nombre}`}>−</button>
+                    <span class="num" data-n>0</span>
+                    <button type="button" data-accion="mas" aria-label={`Añadir un ${p.nombre}`}>+</button>
+                  </div>
+                </div>
+
+                {p.precioPapa && (
+                  <div class="var" data-id={p.id} data-papa="1">
+                    <span class="var__et">Con papa</span>
+                    <b class="num var__p">{cop(p.precioPapa)}</b>
+                    <button class="add" type="button" data-accion="mas">Añadir</button>
+                    <div class="paso" hidden>
+                      <button type="button" data-accion="menos" aria-label={`Quitar un ${p.nombre} con papa`}>−</button>
+                      <span class="num" data-n>0</span>
+                      <button type="button" data-accion="mas" aria-label={`Añadir un ${p.nombre} con papa`}>+</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div class="vars vars--wa">
+                <b class="num var__p">{cop(p.precio)}</b>
+                {p.precioPapa && <b class="num var__p">{cop(p.precioPapa)} con papa</b>}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  {mesa && (
+    <>
+      <div class="hueco" aria-hidden="true"></div>
+      <a class="carrito" href="/pedir/confirmar" hidden>
+        <span class="carrito__n"><b data-items>0</b> ítems</span>
+        <span class="carrito__t num" data-total>$0</span>
+        <span class="carrito__ir">Ver pedido →</span>
+      </a>
+    </>
+  )}
+
+  <script id="precios" type="application/json" set:html={JSON.stringify(precios)} />
+</Pedido>
+
+<style>
+  .aviso {
+    margin: var(--gutter);
+    padding: 22px;
+    border: 1px solid var(--hairline);
+    background: var(--surface-2);
+  }
+  .aviso__t {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 19px;
+    color: var(--dkt-cream);
+  }
+  .aviso__d { margin: 0 0 18px; font-size: 14.5px; color: var(--ink-dim); max-width: 46ch; }
+
+  .cats {
+    position: sticky;
+    top: 58px;
+    z-index: 40;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 12px var(--gutter);
+    background: var(--surface);
+    border-bottom: 1px solid var(--hairline);
+    scrollbar-width: none;
+  }
+  .cats::-webkit-scrollbar { display: none; }
+  .cats a {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    color: var(--ink-dim);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+
+  .cat { padding: clamp(28px, 6vw, 44px) var(--gutter) 0; scroll-margin-top: 118px; }
+  .cat__t {
+    font-size: clamp(28px, 7vw, 44px);
+    color: var(--dkt-cream);
+    margin: 0 0 18px;
+  }
+
+  .lista { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+  .prod {
+    display: grid;
+    gap: 12px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .prod__n {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: clamp(17px, 4.4vw, 21px);
+    letter-spacing: -.02em;
+    color: var(--dkt-cream);
+    margin: 0 0 6px;
+  }
+  .prod__d { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-dim); max-width: 58ch; }
+
+  .vars { display: flex; flex-wrap: wrap; gap: 10px; }
+  .var {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px 8px 14px;
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+  .var__et {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .var__p { font-size: 15px; color: var(--dkt-cream); font-weight: 700; }
+  .vars--wa { gap: 18px; }
+  .vars--wa .var__p { color: var(--ink-dim); font-weight: 400; font-size: 14px; }
+
+  .add {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    min-height: 44px;
+    border: 0;
+    background: var(--dkt-red);
+    color: var(--dkt-cream);
+    cursor: pointer;
+  }
+
+  .paso { display: flex; align-items: center; gap: 4px; }
+  .paso button {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: var(--dkt-red);
+    color: var(--dkt-cream);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .paso span { min-width: 30px; text-align: center; font-size: 16px; font-weight: 700; color: var(--dkt-cream); }
+
+  /* Deja sitio para que la barra del carrito no tape el último producto. */
+  .hueco { height: 96px; }
+
+  .carrito {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px var(--gutter);
+    background: var(--dkt-red);
+    color: var(--dkt-cream);
+    box-shadow: 0 -14px 34px -18px rgba(0,0,0,.9);
+  }
+  .carrito__n {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .carrito__n b { font-size: 14px; }
+  .carrito__t { margin-inline-start: auto; font-size: 18px; font-weight: 700; }
+  .carrito__ir { font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+</style>
+
+<script>
+  const CLAVE = "dkt_carrito";
+  const datos = document.getElementById("precios");
+  const precios = datos ? JSON.parse(datos.textContent || "{}") : {};
+
+  const leer = () => {
+    try {
+      const v = JSON.parse(localStorage.getItem(CLAVE) || "[]");
+      return Array.isArray(v) ? v : [];
+    } catch {
+      return [];
+    }
+  };
+
+  let carrito = leer().filter((l) => precios[l.id]);
+
+  const guardar = () => {
+    try {
+      localStorage.setItem(CLAVE, JSON.stringify(carrito));
+    } catch {
+      /* modo privado: el carrito vive solo en memoria */
+    }
+  };
+
+  const buscar = (id, conPapa) => carrito.find((l) => l.id === id && !!l.conPapa === conPapa);
+
+  function mover(id, conPapa, delta) {
+    const linea = buscar(id, conPapa);
+    if (!linea) {
+      if (delta > 0) carrito.push({ id, conPapa, cantidad: 1 });
+    } else {
+      linea.cantidad += delta;
+      if (linea.cantidad < 1) carrito = carrito.filter((l) => l !== linea);
+    }
+    guardar();
+  }
+
+  function pintarVar(el) {
+    const n = buscar(el.dataset.id, el.dataset.papa === "1")?.cantidad ?? 0;
+    el.querySelector(".add").hidden = n > 0;
+    el.querySelector(".paso").hidden = n === 0;
+    el.querySelector("[data-n]").textContent = String(n);
+  }
+
+  function pintarBarra() {
+    const barra = document.querySelector(".carrito");
+    if (!barra) return;
+    const items = carrito.reduce((s, l) => s + l.cantidad, 0);
+    const total = carrito.reduce((s, l) => {
+      const p = precios[l.id];
+      return s + (l.conPapa ? p.pp ?? p.p : p.p) * l.cantidad;
+    }, 0);
+    barra.hidden = items === 0;
+    barra.querySelector("[data-items]").textContent = String(items);
+    barra.querySelector("[data-total]").textContent =
+      "$" + new Intl.NumberFormat("es-CO").format(total);
+  }
+
+  document.querySelectorAll(".var").forEach(pintarVar);
+  pintarBarra();
+
+  document.addEventListener("click", (e) => {
+    const boton = e.target.closest("[data-accion]");
+    if (!boton) return;
+    const el = boton.closest(".var");
+    if (!el) return;
+
+    mover(el.dataset.id, el.dataset.papa === "1", boton.dataset.accion === "mas" ? 1 : -1);
+    pintarVar(el);
+    pintarBarra();
+  });
+</script>
