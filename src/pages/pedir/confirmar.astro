@@ -1,0 +1,237 @@
+---
+import Pedido from "../../layouts/Pedido.astro";
+import menu from "../../data/menu.json";
+import { mesaActual } from "../../lib/mesa";
+
+export const prerender = false;
+
+const mesa = await mesaActual(Astro.cookies);
+if (!mesa) return Astro.redirect("/pedir/", 302);
+
+const precios = Object.fromEntries(
+  menu.categorias.flatMap((c) =>
+    c.productos.map((p) => [p.id, { n: p.nombre, p: p.precio, pp: p.precioPapa ?? null }])
+  )
+);
+---
+
+<Pedido title="Tu pedido — Dakota Smokehouse" mesa={mesa.etiqueta}>
+  <div class="env">
+    <h1 class="env__t">Tu pedido</h1>
+
+    <ul class="lineas" data-lineas></ul>
+
+    <p class="vacio" data-vacio hidden>
+      Todavía no has añadido nada. <a href="/pedir/">Volver a la carta</a>
+    </p>
+
+    <div class="pie" data-pie hidden>
+      <div class="total">
+        <span>Total</span>
+        <b class="num" data-total>$0</b>
+      </div>
+
+      <label class="nota">
+        <span>Algo que deba saber la cocina</span>
+        <textarea
+          data-nota
+          rows="2"
+          maxlength="200"
+          placeholder="Sin cebolla, término medio, adiciones…"
+        ></textarea>
+      </label>
+
+      <button class="btn env__ok" type="button" data-enviar>Enviar a cocina</button>
+      <p class="err" data-error hidden></p>
+      <a class="mas" href="/pedir/">Añadir algo más</a>
+    </div>
+  </div>
+
+  <script id="precios" type="application/json" set:html={JSON.stringify(precios)} />
+</Pedido>
+
+<style>
+  .env { padding: clamp(24px, 6vw, 40px) var(--gutter) 60px; max-width: 620px; }
+  .env__t { font-size: clamp(32px, 8vw, 52px); color: var(--dkt-cream); margin: 0 0 22px; }
+
+  .lineas { list-style: none; margin: 0; padding: 0; }
+  .lineas li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .lineas .n {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 16px;
+    color: var(--dkt-cream);
+  }
+  .lineas .et {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ember-hot);
+  }
+  .lineas .imp { font-size: 15px; font-weight: 700; color: var(--dkt-cream); align-self: center; }
+  .lineas .paso { display: flex; align-items: center; gap: 4px; grid-column: 1 / -1; }
+  .lineas .paso button {
+    width: 44px; height: 44px; border: 0;
+    background: var(--surface-3); color: var(--dkt-cream);
+    font-size: 20px; line-height: 1; cursor: pointer;
+  }
+  .lineas .paso span { min-width: 30px; text-align: center; font-weight: 700; color: var(--dkt-cream); }
+
+  .vacio { padding: 30px 0; color: var(--ink-dim); font-size: 15px; }
+  .vacio a { color: var(--ember-hot); text-decoration: underline; text-underline-offset: 3px; }
+
+  .total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 26px 0 22px; padding-top: 18px;
+    border-top: 2px solid var(--dkt-red);
+  }
+  .total span {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .total b { font-size: clamp(26px, 6vw, 34px); color: var(--dkt-cream); }
+
+  .nota { display: block; margin-bottom: 20px; }
+  .nota span {
+    display: block; margin-bottom: 8px;
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .nota textarea {
+    width: 100%; padding: 12px;
+    background: var(--surface-2); color: var(--dkt-cream);
+    border: 1px solid var(--hairline);
+    font-family: var(--font-body); font-size: 15px;
+    resize: vertical;
+  }
+
+  .env__ok { width: 100%; justify-content: center; }
+  .env__ok[disabled] { opacity: .6; cursor: progress; }
+
+  .err { margin: 14px 0 0; font-size: 14px; color: var(--ember-hot); }
+  .mas {
+    display: inline-block; margin-top: 22px;
+    font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-dim); text-decoration: underline; text-underline-offset: 4px;
+  }
+</style>
+
+<script>
+  const CLAVE = "dkt_carrito";
+  const precios = JSON.parse(document.getElementById("precios")?.textContent || "{}");
+
+  const lista = document.querySelector("[data-lineas]");
+  const pie = document.querySelector("[data-pie]");
+  const vacio = document.querySelector("[data-vacio]");
+  const totalEl = document.querySelector("[data-total]");
+  const boton = document.querySelector("[data-enviar]");
+  const errorEl = document.querySelector("[data-error]");
+
+  const pesos = (n) => "$" + new Intl.NumberFormat("es-CO").format(n);
+
+  let carrito = (() => {
+    try {
+      const v = JSON.parse(localStorage.getItem(CLAVE) || "[]");
+      return Array.isArray(v) ? v.filter((l) => precios[l.id]) : [];
+    } catch {
+      return [];
+    }
+  })();
+
+  const guardar = () => {
+    try {
+      localStorage.setItem(CLAVE, JSON.stringify(carrito));
+    } catch {}
+  };
+
+  const precioDe = (l) => (l.conPapa ? precios[l.id].pp ?? precios[l.id].p : precios[l.id].p);
+
+  function pintar() {
+    lista.textContent = "";
+
+    carrito.forEach((l, i) => {
+      const p = precios[l.id];
+      const li = document.createElement("li");
+
+      const izq = document.createElement("div");
+      const n = document.createElement("p");
+      n.className = "n";
+      n.textContent = p.n;
+      izq.append(n);
+      if (l.conPapa) {
+        const et = document.createElement("p");
+        et.className = "et";
+        et.textContent = "Con papa";
+        izq.append(et);
+      }
+
+      const imp = document.createElement("b");
+      imp.className = "imp num";
+      imp.textContent = pesos(precioDe(l) * l.cantidad);
+
+      const paso = document.createElement("div");
+      paso.className = "paso";
+      paso.innerHTML =
+        '<button type="button" data-menos aria-label="Quitar uno">−</button>' +
+        '<span class="num"></span>' +
+        '<button type="button" data-mas aria-label="Añadir uno">+</button>';
+      paso.querySelector("span").textContent = String(l.cantidad);
+      paso.querySelector("[data-menos]").addEventListener("click", () => mover(i, -1));
+      paso.querySelector("[data-mas]").addEventListener("click", () => mover(i, 1));
+
+      li.append(izq, imp, paso);
+      lista.append(li);
+    });
+
+    const total = carrito.reduce((s, l) => s + precioDe(l) * l.cantidad, 0);
+    totalEl.textContent = pesos(total);
+
+    const hay = carrito.length > 0;
+    pie.hidden = !hay;
+    vacio.hidden = hay;
+  }
+
+  function mover(i, delta) {
+    carrito[i].cantidad += delta;
+    if (carrito[i].cantidad < 1) carrito.splice(i, 1);
+    guardar();
+    pintar();
+  }
+
+  boton.addEventListener("click", async () => {
+    boton.disabled = true;
+    errorEl.hidden = true;
+
+    try {
+      const res = await fetch("/pedir/api/pedido", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          items: carrito,
+          nota: document.querySelector("[data-nota]").value,
+        }),
+      });
+      const datos = await res.json();
+      if (!res.ok) throw new Error(datos.error || "No se pudo enviar el pedido.");
+
+      // El carrito se vacía solo cuando la cocina ya lo tiene: si falla el
+      // envío, lo pedido sigue ahí para reintentar sin volver a la carta.
+      carrito = [];
+      guardar();
+      location.href = `/pedir/pedido/${datos.id}`;
+    } catch (e) {
+      errorEl.textContent = e.message;
+      errorEl.hidden = false;
+      boton.disabled = false;
+    }
+  });
+
+  pintar();
+</script>
