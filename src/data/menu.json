@@ -212,14 +212,17 @@
       "script": "para la mesa",
       "adiciones": [
         {
+          "id": "salchicha",
           "nombre": "Salchicha adicional",
           "precio": 7000
         },
         {
+          "id": "chorizo",
           "nombre": "Chorizo adicional",
           "precio": 8500
         },
         {
+          "id": "quesudo",
           "nombre": "Quesudo",
           "precio": 9500
         }
