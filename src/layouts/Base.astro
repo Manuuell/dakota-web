@@ -91,6 +91,10 @@ const nav = [
       <div class="shell foot__legal">
         <span class="num">© 2026 Dakota Smokehouse</span>
         <span class="num">Cartagena · Colombia</span>
+        <!-- Entrada del personal. No es un secreto ni pretende serlo: lo que
+             protege el panel es la sesión y la lista de staff, no que el enlace
+             sea difícil de encontrar. Lleva nofollow para no gastar rastreo. -->
+        <a class="num foot__staff" href="/pedir/cocina" rel="nofollow">Acceso equipo</a>
       </div>
     </footer>
 
@@ -266,6 +270,8 @@ const nav = [
     text-transform: uppercase;
     color: var(--ink-faint);
   }
+  .foot__staff { color: var(--ink-faint); transition: color .25s ease; }
+  .foot__staff:hover { color: var(--ember-hot); }
   @media (max-width: 700px) { .foot__in { grid-template-columns: 1fr; } }
 
   /* ---------- botón flotante WhatsApp ---------- */
