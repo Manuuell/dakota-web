@@ -2,7 +2,7 @@
 import Pedido from "../../../layouts/Pedido.astro";
 import { mesaActual } from "../../../lib/mesa";
 import { cuentaDeMesa, pedidoPorId, type Estado } from "../../../lib/pedidos";
-import { cop } from "../../../lib/carta";
+import { cop, precioLinea } from "../../../lib/carta";
 
 export const prerender = false;
 
@@ -58,9 +58,10 @@ const indice = PASOS.findIndex((p) => p.estado === pedido.estado);
             <span class="items__n">
               {i.nombre}
               {i.conPapa && <em>con papa</em>}
+              {i.adiciones.map((a) => <em>+ {a.nombre}</em>)}
               {i.nota && <i>{i.nota}</i>}
             </span>
-            <b class="items__p num">{cop(i.precioCop * i.cantidad)}</b>
+            <b class="items__p num">{cop(precioLinea(i))}</b>
           </li>
         ))}
       </ul>

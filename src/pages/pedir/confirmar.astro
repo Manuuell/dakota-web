@@ -10,7 +10,15 @@ if (!mesa) return Astro.redirect("/pedir/", 302);
 
 const precios = Object.fromEntries(
   menu.categorias.flatMap((c) =>
-    c.productos.map((p) => [p.id, { n: p.nombre, p: p.precio, pp: p.precioPapa ?? null }])
+    c.productos.map((p) => [
+      p.id,
+      {
+        n: p.nombre,
+        p: p.precio,
+        pp: p.precioPapa ?? null,
+        ad: Object.fromEntries((c.adiciones ?? []).map((a) => [a.id, { n: a.nombre, p: a.precio }])),
+      },
+    ])
   )
 );
 ---
@@ -151,7 +159,11 @@ const precios = Object.fromEntries(
     } catch {}
   };
 
-  const precioDe = (l) => (l.conPapa ? precios[l.id].pp ?? precios[l.id].p : precios[l.id].p);
+  function precioDe(l) {
+    const p = precios[l.id];
+    const base = l.conPapa ? p.pp ?? p.p : p.p;
+    return (l.adiciones ?? []).reduce((s, id) => s + (p.ad?.[id]?.p ?? 0), base);
+  }
 
   function pintar() {
     lista.textContent = "";
@@ -169,6 +181,14 @@ const precios = Object.fromEntries(
         const et = document.createElement("p");
         et.className = "et";
         et.textContent = "Con papa";
+        izq.append(et);
+      }
+      for (const id of l.adiciones ?? []) {
+        const a = p.ad?.[id];
+        if (!a) continue;
+        const et = document.createElement("p");
+        et.className = "et";
+        et.textContent = `+ ${a.nombre ?? a.n}`;
         izq.append(et);
       }
 

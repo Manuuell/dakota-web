@@ -505,6 +505,11 @@ const config = {
         et.textContent = "con papa";
         texto.append(et);
       }
+      for (const a of it.adiciones ?? []) {
+        const et = document.createElement("em");
+        et.textContent = `+ ${a.nombre}`;
+        texto.append(et);
+      }
       if (it.nota) {
         const n = document.createElement("i");
         n.textContent = it.nota;
