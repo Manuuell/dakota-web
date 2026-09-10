@@ -1,0 +1,595 @@
+---
+import Pedido from "../../layouts/Pedido.astro";
+import { leer } from "../../lib/env";
+
+export const prerender = false;
+
+// La configuración va inyectada desde el servidor en vez de compilada en el
+// bundle: así cambiar de proyecto de Firebase no obliga a reconstruir. Estas
+// claves son públicas por diseño; lo que protege los datos son firestore.rules.
+const config = {
+  apiKey: leer("PUBLIC_FIREBASE_API_KEY") ?? "",
+  authDomain: leer("PUBLIC_FIREBASE_AUTH_DOMAIN") ?? "",
+  projectId: leer("PUBLIC_FIREBASE_PROJECT_ID") ?? "dakota",
+  emuladorFirestore: leer("FIRESTORE_EMULATOR_HOST") ?? "",
+  emuladorAuth: leer("FIREBASE_AUTH_EMULATOR_HOST") ?? "",
+};
+---
+
+<Pedido title="Cocina — Dakota">
+  <div class="cargando" data-cargando>Conectando…</div>
+
+  <div class="entrar" data-login hidden>
+    <h1 class="entrar__t">Cocina</h1>
+
+    <form class="entrar__f" data-form-correo>
+      <label>
+        <span>Correo</span>
+        <input type="email" name="correo" autocomplete="username" required />
+      </label>
+      <label>
+        <span>Contraseña</span>
+        <input type="password" name="clave" autocomplete="current-password" required />
+      </label>
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+
+    <p class="entrar__o"><span>o</span></p>
+    <button class="chip entrar__g" type="button" data-google>Entrar con Google</button>
+    <p class="err" data-login-error hidden></p>
+  </div>
+
+  <div class="entrar" data-sin-permiso hidden>
+    <h1 class="entrar__t">Sin acceso</h1>
+    <p class="entrar__d">
+      La cuenta <b data-quien></b> no está autorizada para ver los pedidos.
+      Pídele al dueño que la habilite.
+    </p>
+    <button class="chip" type="button" data-salir-2>Usar otra cuenta</button>
+  </div>
+
+  <div class="panel" data-panel hidden>
+    <header class="panel__cab">
+      <div>
+        <p class="eyebrow">En cocina</p>
+        <h1 class="panel__t"><span data-cuenta>0</span> pendientes</h1>
+      </div>
+      <div class="panel__acc">
+        <button class="chip" type="button" data-sonido aria-pressed="true">Sonido</button>
+        <button class="chip" type="button" data-salir>Salir</button>
+      </div>
+    </header>
+
+    <p class="nada" data-nada hidden>Nada pendiente. La cocina está al día.</p>
+
+    <ul class="cola" data-cola></ul>
+
+    <section class="mesas">
+      <h2 class="mesas__t">Mesas abiertas</h2>
+      <ul class="mesas__l" data-mesas></ul>
+      <p class="nada" data-sin-mesas hidden>Ninguna mesa con cuenta abierta.</p>
+    </section>
+  </div>
+
+  <script id="cfg" type="application/json" set:html={JSON.stringify(config)} />
+</Pedido>
+
+<style>
+  .cargando, .nada {
+    padding: 40px var(--gutter);
+    color: var(--ink-dim);
+    font-size: 15px;
+  }
+
+  .entrar {
+    max-width: 380px;
+    margin: clamp(40px, 10vw, 90px) auto;
+    padding-inline: var(--gutter);
+    display: grid;
+    gap: 16px;
+  }
+  .entrar__t { font-size: 42px; color: var(--dkt-cream); margin: 0 0 6px; }
+  .entrar__d { margin: 0; font-size: 14.5px; color: var(--ink-dim); line-height: 1.55; }
+  .entrar__d b { color: var(--dkt-cream); }
+  .entrar .btn { justify-content: center; margin-top: 6px; }
+  .entrar__f { display: grid; gap: 14px; }
+  .entrar__f label { display: grid; gap: 7px; }
+  .entrar__f span {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .entrar__f input {
+    padding: 13px;
+    background: var(--surface-2);
+    border: 1px solid var(--hairline);
+    color: var(--dkt-cream);
+    font-family: var(--font-body);
+    font-size: 16px;
+  }
+  .entrar__o {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 4px 0;
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+  .entrar__o::before, .entrar__o::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--hairline);
+  }
+  .entrar__g { justify-self: stretch; text-align: center; }
+  .err { margin: 0; font-size: 14px; color: var(--ember-hot); }
+
+  .panel { padding: clamp(20px, 4vw, 34px) var(--gutter) 70px; }
+  .panel__cab {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: clamp(20px, 4vw, 32px);
+  }
+  .panel__t { font-size: clamp(30px, 6vw, 46px); color: var(--dkt-cream); margin: 10px 0 0; }
+  .panel__acc { display: flex; gap: 8px; }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    min-height: 40px;
+    background: transparent;
+    color: var(--ink-dim);
+    border: 1px solid var(--hairline);
+    cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { color: var(--ember-hot); border-color: var(--ember-mid); }
+
+  .cola {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: clamp(12px, 2vw, 18px);
+  }
+
+  .tar {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-2);
+    border: 1px solid var(--hairline);
+    border-top: 3px solid var(--dkt-red);
+  }
+  .tar--preparando { border-top-color: var(--ember-mid); }
+  .tar--listo { border-top-color: var(--ember-hot); }
+
+  .tar__cab {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px 10px;
+  }
+  .tar__mesa { font-family: var(--font-display); font-size: 26px; color: var(--dkt-cream); }
+  .tar__num, .tar__min {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .tar__min--tarde { color: var(--dkt-red); }
+
+  .tar__items { list-style: none; margin: 0; padding: 4px 16px 12px; }
+  .tar__items li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 14.5px;
+    color: var(--dkt-cream);
+  }
+  .tar__items b { color: var(--ember-hot); font-family: var(--font-mono); font-size: 13px; }
+  .tar__items em {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-inline-start: 7px;
+  }
+  .tar__items i { display: block; font-style: normal; font-size: 12.5px; color: var(--ink-dim); }
+
+  .tar__nota {
+    margin: 0;
+    padding: 10px 16px;
+    background: rgba(255, 179, 71, .1);
+    border-block: 1px solid var(--hairline);
+    font-size: 13.5px;
+    color: var(--ember-hot);
+  }
+
+  .tar__pie { display: flex; gap: 8px; padding: 12px 16px; margin-top: auto; }
+  .tar__ok {
+    flex: 1;
+    min-height: 46px;
+    border: 0;
+    background: var(--dkt-red);
+    color: var(--dkt-cream);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .tar__no {
+    min-height: 46px;
+    padding-inline: 13px;
+    background: transparent;
+    border: 1px solid var(--hairline);
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .mesas { margin-top: clamp(34px, 6vw, 54px); }
+  .mesas__t {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 10.5px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 0 0 14px;
+  }
+  .mesas__l { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hairline); }
+  .mesas__l li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .mesas__l .m { font-family: var(--font-display); font-size: 20px; color: var(--dkt-cream); }
+  .mesas__l .r {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .mesas__l .t {
+    margin-inline-start: auto;
+    font-family: var(--font-mono);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--dkt-cream);
+  }
+</style>
+
+<script>
+  import { initializeApp } from "firebase/app";
+  import {
+    GoogleAuthProvider,
+    connectAuthEmulator,
+    getAuth,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+  } from "firebase/auth";
+  import {
+    collection,
+    connectFirestoreEmulator,
+    doc,
+    getDoc,
+    getDocs,
+    getFirestore,
+    onSnapshot,
+    query,
+    serverTimestamp,
+    where,
+    writeBatch,
+    updateDoc,
+  } from "firebase/firestore";
+
+  const cfg = JSON.parse(document.getElementById("cfg").textContent);
+
+  const app = initializeApp({
+    apiKey: cfg.apiKey || "emulador",
+    authDomain: cfg.authDomain,
+    projectId: cfg.projectId,
+  });
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  if (cfg.emuladorAuth) {
+    connectAuthEmulator(auth, `http://${cfg.emuladorAuth}`, { disableWarnings: true });
+  }
+  if (cfg.emuladorFirestore) {
+    const [host, puerto] = cfg.emuladorFirestore.split(":");
+    connectFirestoreEmulator(db, host, Number(puerto));
+  }
+
+  const $ = (sel) => document.querySelector(sel);
+  const cargando = $("[data-cargando]");
+  const login = $("[data-login]");
+  const panel = $("[data-panel]");
+  const cola = $("[data-cola]");
+  const mesas = $("[data-mesas]");
+  const pesos = (n) => "$" + new Intl.NumberFormat("es-CO").format(n);
+
+  const EN_COCINA = ["recibido", "preparando", "listo"];
+  const SIGUIENTE = { recibido: "preparando", preparando: "listo", listo: "entregado" };
+  const BOTON = { recibido: "Empezar", preparando: "Marcar listo", listo: "Entregado" };
+
+  // ---------- aviso sonoro ----------
+  // Dos tonos generados al vuelo: no hay fichero que cargar ni que se pueda
+  // quedar sin caché en la tablet a mitad de servicio.
+  let sonando = true;
+  let audio;
+
+  function pitar() {
+    if (!sonando) return;
+    audio ??= new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state === "suspended") audio.resume();
+    [880, 1180].forEach((hz, i) => {
+      const osc = audio.createOscillator();
+      const vol = audio.createGain();
+      osc.frequency.value = hz;
+      osc.type = "triangle";
+      vol.gain.setValueAtTime(0.0001, audio.currentTime + i * 0.18);
+      vol.gain.exponentialRampToValueAtTime(0.5, audio.currentTime + i * 0.18 + 0.02);
+      vol.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + i * 0.18 + 0.16);
+      osc.connect(vol).connect(audio.destination);
+      osc.start(audio.currentTime + i * 0.18);
+      osc.stop(audio.currentTime + i * 0.18 + 0.18);
+    });
+  }
+
+  $("[data-sonido]").addEventListener("click", (e) => {
+    sonando = !sonando;
+    e.currentTarget.setAttribute("aria-pressed", String(sonando));
+    if (sonando) pitar();
+  });
+
+  // ---------- sesión ----------
+  const sinPermiso = $("[data-sin-permiso]");
+
+  const error = $("[data-login-error]");
+
+  $("[data-form-correo]").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    error.hidden = true;
+    const datos = new FormData(e.currentTarget);
+    try {
+      await signInWithEmailAndPassword(auth, datos.get("correo"), datos.get("clave"));
+    } catch {
+      error.textContent = "Correo o contraseña incorrectos.";
+      error.hidden = false;
+    }
+  });
+
+  $("[data-google]").addEventListener("click", async () => {
+    error.hidden = true;
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (e) {
+      if (e.code === "auth/popup-closed-by-user") return;
+      error.textContent = "No se pudo entrar. Revisa la conexión e inténtalo otra vez.";
+      error.hidden = false;
+    }
+  });
+
+  const salir = () => signOut(auth);
+  $("[data-salir]").addEventListener("click", salir);
+  $("[data-salir-2]").addEventListener("click", salir);
+
+  let cancelarEscucha;
+
+  onAuthStateChanged(auth, async (usuario) => {
+    cancelarEscucha?.();
+    cargando.hidden = true;
+
+    if (!usuario) {
+      login.hidden = false;
+      sinPermiso.hidden = true;
+      panel.hidden = true;
+      return;
+    }
+
+    // Autenticado no es autorizado: con acceso por Google entra cualquiera con
+    // cuenta, así que el permiso real es tener documento en /staff. Las reglas
+    // de Firestore lo exigen igual; esto solo decide qué pantalla mostrar.
+    const permitido = await getDoc(doc(db, "staff", usuario.uid))
+      .then((d) => d.exists())
+      .catch(() => false);
+
+    login.hidden = true;
+    sinPermiso.hidden = permitido;
+    panel.hidden = !permitido;
+
+    if (permitido) {
+      escuchar();
+    } else {
+      $("[data-quien]").textContent = usuario.email ?? usuario.uid;
+    }
+  });
+
+  // ---------- cola en vivo ----------
+  let conocidos = null; // null = primer snapshot, no hay que pitar por lo ya existente
+  let ultimaCola = [];
+
+  function escuchar() {
+    // Igualdad simple sobre un solo campo: no necesita índice compuesto, y los
+    // pedidos abiertos de un servicio son pocos, así que el reparto por estado
+    // y el orden se hacen aquí.
+    const abiertos = query(collection(db, "pedidos"), where("cerradoEn", "==", null));
+
+    cancelarEscucha = onSnapshot(abiertos, (snap) => {
+      const pedidos = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => a.numero - b.numero);
+
+      const enCocina = pedidos.filter((p) => EN_COCINA.includes(p.estado));
+
+      const ids = new Set(enCocina.map((p) => p.id));
+      if (conocidos && [...ids].some((id) => !conocidos.has(id))) pitar();
+      conocidos = ids;
+
+      pintarCola(enCocina);
+      pintarMesas(pedidos.filter((p) => p.estado !== "cancelado"));
+    });
+  }
+
+  function pintarCola(pedidos) {
+    ultimaCola = pedidos;
+    cola.textContent = "";
+    $("[data-cuenta]").textContent = String(pedidos.length);
+    $("[data-nada]").hidden = pedidos.length > 0;
+    pedidos.forEach((p) => cola.append(tarjeta(p)));
+  }
+
+  function tarjeta(p) {
+    const li = document.createElement("li");
+    li.className = `tar tar--${p.estado}`;
+
+    const cab = document.createElement("div");
+    cab.className = "tar__cab";
+    const mesa = document.createElement("span");
+    mesa.className = "tar__mesa";
+    mesa.textContent = `Mesa ${p.mesaEtiqueta}`;
+    const min = Math.floor((Date.now() - (p.creadoEn?.toDate?.().getTime() ?? Date.now())) / 60000);
+    const num = document.createElement("span");
+    num.className = min >= 20 ? "tar__num tar__min--tarde" : "tar__num";
+    num.textContent = `#${p.numero} · ${min} min`;
+    cab.append(mesa, num);
+
+    const items = document.createElement("ul");
+    items.className = "tar__items";
+    for (const it of p.items ?? []) {
+      const fila = document.createElement("li");
+      const cant = document.createElement("b");
+      cant.textContent = `${it.cantidad}×`;
+      const texto = document.createElement("span");
+      texto.textContent = it.nombre;
+      if (it.conPapa) {
+        const et = document.createElement("em");
+        et.textContent = "con papa";
+        texto.append(et);
+      }
+      if (it.nota) {
+        const n = document.createElement("i");
+        n.textContent = it.nota;
+        texto.append(n);
+      }
+      fila.append(cant, texto);
+      items.append(fila);
+    }
+
+    const pie = document.createElement("div");
+    pie.className = "tar__pie";
+    const ok = document.createElement("button");
+    ok.type = "button";
+    ok.className = "tar__ok";
+    ok.textContent = BOTON[p.estado];
+    ok.addEventListener("click", () => {
+      ok.disabled = true;
+      updateDoc(doc(db, "pedidos", p.id), { estado: SIGUIENTE[p.estado] });
+    });
+    const no = document.createElement("button");
+    no.type = "button";
+    no.className = "tar__no";
+    no.textContent = "Cancelar";
+    no.addEventListener("click", () => {
+      if (confirm(`¿Cancelar el pedido #${p.numero} de la mesa ${p.mesaEtiqueta}?`)) {
+        updateDoc(doc(db, "pedidos", p.id), { estado: "cancelado" });
+      }
+    });
+    pie.append(ok, no);
+
+    li.append(cab, items);
+
+    if (p.nota) {
+      const nota = document.createElement("p");
+      nota.className = "tar__nota";
+      nota.textContent = p.nota;
+      li.append(nota);
+    }
+
+    li.append(pie);
+    return li;
+  }
+
+  function pintarMesas(pedidos) {
+    mesas.textContent = "";
+    const porMesa = new Map();
+    for (const p of pedidos) {
+      const m = porMesa.get(p.mesaId) ?? { etiqueta: p.mesaEtiqueta, total: 0, rondas: 0 };
+      m.total += p.totalCop;
+      m.rondas += 1;
+      porMesa.set(p.mesaId, m);
+    }
+
+    $("[data-sin-mesas]").hidden = porMesa.size > 0;
+
+    for (const [mesaId, m] of [...porMesa].sort((a, b) => a[1].etiqueta.localeCompare(b[1].etiqueta, "es", { numeric: true }))) {
+      const li = document.createElement("li");
+
+      const et = document.createElement("span");
+      et.className = "m";
+      et.textContent = `Mesa ${m.etiqueta}`;
+
+      const rondas = document.createElement("span");
+      rondas.className = "r";
+      rondas.textContent = m.rondas === 1 ? "1 pedido" : `${m.rondas} pedidos`;
+
+      const total = document.createElement("span");
+      total.className = "t";
+      total.textContent = pesos(m.total);
+
+      const cobrar = document.createElement("button");
+      cobrar.type = "button";
+      cobrar.className = "tar__no";
+      cobrar.textContent = "Cobrada, cerrar";
+      cobrar.addEventListener("click", () => cerrarMesa(mesaId, m));
+
+      li.append(et, rondas, total, cobrar);
+      mesas.append(li);
+    }
+  }
+
+  async function cerrarMesa(mesaId, m) {
+    if (!confirm(`¿Cerrar la mesa ${m.etiqueta} por ${pesos(m.total)}?`)) return;
+
+    const abiertos = await getDocs(
+      query(collection(db, "pedidos"), where("cerradoEn", "==", null))
+    );
+    const lote = writeBatch(db);
+    abiertos.docs
+      .filter((d) => d.data().mesaId === mesaId)
+      .forEach((d) => lote.update(d.ref, { cerradoEn: serverTimestamp(), pagado: true }));
+    await lote.commit();
+  }
+
+  // Firestore no manda nada mientras el plato está en el fuego, pero el reloj
+  // sigue: sin esto los minutos de espera se quedarían congelados en la tablet.
+  setInterval(() => {
+    if (!panel.hidden && ultimaCola.length) pintarCola(ultimaCola);
+  }, 30000);
+</script>
