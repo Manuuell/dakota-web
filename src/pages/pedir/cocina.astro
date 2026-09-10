@@ -56,6 +56,7 @@ const config = {
       </div>
       <div class="panel__acc">
         <button class="chip" type="button" data-sonido aria-pressed="true">Sonido</button>
+        <a class="chip" href="/pedir/ventas">Ventas</a>
         <button class="chip" type="button" data-salir>Salir</button>
       </div>
     </header>
@@ -358,23 +359,11 @@ const config = {
 </style>
 
 <script>
-  import { initializeApp } from "firebase/app";
-  import {
-    GoogleAuthProvider,
-    connectAuthEmulator,
-    getAuth,
-    onAuthStateChanged,
-    signInWithEmailAndPassword,
-    signInWithPopup,
-    signOut,
-  } from "firebase/auth";
+  import { conectar, entrarConCorreo, entrarConGoogle, motivo, salir, vigilarSesion } from "../../lib/sesion-panel";
   import {
     collection,
-    connectFirestoreEmulator,
     doc,
-    getDoc,
     getDocs,
-    getFirestore,
     onSnapshot,
     query,
     serverTimestamp,
@@ -384,22 +373,7 @@ const config = {
   } from "firebase/firestore";
 
   const cfg = JSON.parse(document.getElementById("cfg").textContent);
-
-  const app = initializeApp({
-    apiKey: cfg.apiKey || "emulador",
-    authDomain: cfg.authDomain,
-    projectId: cfg.projectId,
-  });
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  if (cfg.emuladorAuth) {
-    connectAuthEmulator(auth, `http://${cfg.emuladorAuth}`, { disableWarnings: true });
-  }
-  if (cfg.emuladorFirestore) {
-    const [host, puerto] = cfg.emuladorFirestore.split(":");
-    connectFirestoreEmulator(db, host, Number(puerto));
-  }
+  const { auth, db } = conectar(cfg);
 
   const $ = (sel) => document.querySelector(sel);
   const cargando = $("[data-cargando]");
@@ -454,69 +428,40 @@ const config = {
     error.hidden = true;
     const datos = new FormData(e.currentTarget);
     try {
-      await signInWithEmailAndPassword(auth, datos.get("correo"), datos.get("clave"));
-    } catch {
-      error.textContent = "Correo o contraseña incorrectos.";
+      await entrarConCorreo(auth, datos.get("correo"), datos.get("clave"));
+    } catch (err) {
+      error.textContent = motivo(err) ?? "";
       error.hidden = false;
     }
   });
-
-  // Un mensaje genérico aquí cuesta caro: el fallo típico es de configuración
-  // (el dominio sin autorizar en Firebase Auth) y sin decirlo parece un
-  // problema de red, que es justo lo que no es.
-  const MOTIVOS = {
-    "auth/unauthorized-domain":
-      `El dominio ${location.hostname} no está autorizado en Firebase Auth. ` +
-      `Añádelo en Authentication → Configuración → Dominios autorizados.`,
-    "auth/popup-blocked": "El navegador bloqueó la ventana de Google. Permite las ventanas emergentes en este sitio.",
-    "auth/network-request-failed": "Sin conexión con Firebase. Revisa la red.",
-    "auth/operation-not-allowed": "El acceso con Google no está activado en este proyecto de Firebase.",
-  };
 
   $("[data-google]").addEventListener("click", async () => {
     error.hidden = true;
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
-    } catch (e) {
-      if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
-      error.textContent = MOTIVOS[e.code] ?? `No se pudo entrar (${e.code ?? "error desconocido"}).`;
+      await entrarConGoogle(auth);
+    } catch (err) {
+      const m = motivo(err);
+      if (!m) return;
+      error.textContent = m;
       error.hidden = false;
     }
   });
 
-  const salir = () => signOut(auth);
-  $("[data-salir]").addEventListener("click", salir);
-  $("[data-salir-2]").addEventListener("click", salir);
+  $("[data-salir]").addEventListener("click", () => salir(auth));
+  $("[data-salir-2]").addEventListener("click", () => salir(auth));
 
   let cancelarEscucha;
 
-  onAuthStateChanged(auth, async (usuario) => {
+  vigilarSesion(auth, db, (estado, usuario) => {
     cancelarEscucha?.();
     cargando.hidden = true;
 
-    if (!usuario) {
-      login.hidden = false;
-      sinPermiso.hidden = true;
-      panel.hidden = true;
-      return;
-    }
+    login.hidden = estado !== "fuera";
+    sinPermiso.hidden = estado !== "sin-permiso";
+    panel.hidden = estado !== "dentro";
 
-    // Autenticado no es autorizado: con acceso por Google entra cualquiera con
-    // cuenta, así que el permiso real es tener documento en /staff. Las reglas
-    // de Firestore lo exigen igual; esto solo decide qué pantalla mostrar.
-    const permitido = await getDoc(doc(db, "staff", usuario.uid))
-      .then((d) => d.exists())
-      .catch(() => false);
-
-    login.hidden = true;
-    sinPermiso.hidden = permitido;
-    panel.hidden = !permitido;
-
-    if (permitido) {
-      escuchar();
-    } else {
-      $("[data-quien]").textContent = usuario.email ?? usuario.uid;
-    }
+    if (estado === "dentro") escuchar();
+    if (estado === "sin-permiso") $("[data-quien]").textContent = usuario.email ?? usuario.uid;
   });
 
   // ---------- cola en vivo ----------
