@@ -1,5 +1,6 @@
 ---
 import Pedido from "../../layouts/Pedido.astro";
+import "../../styles/panel.css";
 import { leer } from "../../lib/env";
 
 export const prerender = false;
@@ -103,8 +104,6 @@ const config = {
   .alta .btn { min-height: 48px; justify-content: center; }
   .alta .btn[disabled] { opacity: .55; cursor: progress; }
   @media (max-width: 700px) { .alta { grid-template-columns: 1fr; } }
-
-  .ok { margin: 16px 0 0; font-size: 14px; color: var(--ember-hot); }
 
   .lista { list-style: none; margin: clamp(24px, 4vw, 34px) 0 0; padding: 0; }
   .lista li {

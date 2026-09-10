@@ -1,0 +1,117 @@
+/* ============================================================
+   Armazón común de las pantallas internas (cocina · ventas · equipo).
+
+   Vive en un fichero y no en cada página por un motivo concreto: estaba
+   duplicado entre cocina y ventas, y al escribir la tercera pantalla solo se
+   añadió lo suyo — el resultado fue una página sin maquetar. Cada pantalla se
+   queda solo con lo que es de verdad suyo.
+
+   Se importa como CSS normal, así que no lleva el alcance por atributo de
+   Astro: las tarjetas y listas que pinta el JavaScript también quedan
+   alcanzadas.
+   ============================================================ */
+
+.cargando, .vacio {
+  padding: 34px var(--gutter);
+  color: var(--ink-dim);
+  font-size: 15px;
+}
+
+/* ---------- puerta de entrada ---------- */
+.entrar {
+  max-width: 380px;
+  margin: clamp(40px, 10vw, 90px) auto;
+  padding-inline: var(--gutter);
+  display: grid;
+  gap: 16px;
+}
+.entrar__t { font-size: 42px; color: var(--dkt-cream); margin: 0 0 6px; }
+.entrar__d { margin: 0; font-size: 14.5px; color: var(--ink-dim); line-height: 1.55; }
+.entrar__d b { color: var(--dkt-cream); }
+.entrar .btn { justify-content: center; margin-top: 6px; }
+.entrar__f { display: grid; gap: 14px; }
+.entrar__f label { display: grid; gap: 7px; }
+.entrar__f span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.entrar__f input {
+  padding: 13px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  color: var(--dkt-cream);
+  font-family: var(--font-body);
+  font-size: 16px;
+}
+.entrar__o {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 4px 0;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.entrar__o::before, .entrar__o::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+.entrar__g { justify-self: stretch; text-align: center; }
+
+.err { margin: 0; font-size: 14px; color: var(--ember-hot); }
+.ok { margin: 16px 0 0; font-size: 14px; color: var(--ember-hot); }
+
+/* ---------- botones de barra ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  min-height: 40px;
+  background: transparent;
+  color: var(--ink-dim);
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease;
+}
+.chip:hover { color: var(--dkt-cream); border-color: var(--ink-faint); }
+.chip[aria-pressed="true"] { color: var(--ember-hot); border-color: var(--ember-mid); }
+
+/* Selector de un grupo de opciones (periodo, medida). */
+.per {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 10px 15px;
+  min-height: 42px;
+  background: transparent;
+  color: var(--ink-dim);
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  transition: color .2s ease, background .2s ease, border-color .2s ease;
+}
+.per:hover { color: var(--dkt-cream); }
+.per[aria-pressed="true"] { background: var(--dkt-red); border-color: var(--dkt-red); color: var(--dkt-cream); }
+
+/* ---------- cabecera de pantalla ---------- */
+.tablero {
+  padding: clamp(20px, 4vw, 34px) var(--gutter) 80px;
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.cab {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(20px, 4vw, 30px);
+}
+.cab__t { font-size: clamp(34px, 7vw, 56px); color: var(--dkt-cream); margin: 10px 0 0; }
+.cab__nav { display: flex; gap: 8px; flex-wrap: wrap; }

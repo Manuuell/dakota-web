@@ -1,5 +1,6 @@
 ---
 import Pedido from "../../layouts/Pedido.astro";
+import "../../styles/panel.css";
 import { leer } from "../../lib/env";
 
 export const prerender = false;
@@ -81,59 +82,9 @@ const config = {
      data-astro-cid que solo llevan los elementos de la plantilla. Con estilos
      scoped, nada de lo que pinta el JS quedaría alcanzado. -->
 <style is:global>
-  .cargando, .nada {
-    padding: 40px var(--gutter);
-    color: var(--ink-dim);
-    font-size: 15px;
-  }
-
-  .entrar {
-    max-width: 380px;
-    margin: clamp(40px, 10vw, 90px) auto;
-    padding-inline: var(--gutter);
-    display: grid;
-    gap: 16px;
-  }
-  .entrar__t { font-size: 42px; color: var(--dkt-cream); margin: 0 0 6px; }
-  .entrar__d { margin: 0; font-size: 14.5px; color: var(--ink-dim); line-height: 1.55; }
-  .entrar__d b { color: var(--dkt-cream); }
-  .entrar .btn { justify-content: center; margin-top: 6px; }
-  .entrar__f { display: grid; gap: 14px; }
-  .entrar__f label { display: grid; gap: 7px; }
-  .entrar__f span {
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-  }
-  .entrar__f input {
-    padding: 13px;
-    background: var(--surface-2);
-    border: 1px solid var(--hairline);
-    color: var(--dkt-cream);
-    font-family: var(--font-body);
-    font-size: 16px;
-  }
-  .entrar__o {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin: 4px 0;
-    color: var(--ink-faint);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-  }
-  .entrar__o::before, .entrar__o::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--hairline);
-  }
-  .entrar__g { justify-self: stretch; text-align: center; }
-  .err { margin: 0; font-size: 14px; color: var(--ember-hot); }
+  /* El armazón (entrada, chips, cabecera) vive en styles/panel.css, que
+     comparten las tres pantallas internas. Aquí solo lo propio de la cocina. */
+  .nada { padding: 40px var(--gutter); color: var(--ink-dim); font-size: 15px; }
 
   .panel { padding: clamp(20px, 4vw, 34px) var(--gutter) 70px; }
   .panel__cab {
@@ -145,24 +96,8 @@ const config = {
     margin-bottom: clamp(20px, 4vw, 32px);
   }
   .panel__t { font-size: clamp(30px, 6vw, 46px); color: var(--dkt-cream); margin: 10px 0 0; }
-  .panel__acc { display: flex; gap: 8px; }
-  .chip {
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    padding: 10px 14px;
-    min-height: 40px;
-    background: transparent;
-    color: var(--ink-dim);
-    border: 1px solid var(--hairline);
-    cursor: pointer;
-  }
-  .chip[aria-pressed="true"] { color: var(--ember-hot); border-color: var(--ember-mid); }
+  .panel__acc { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  /* Los tickets se leen en orden de llegada, así que la lista va en columnas
-     de altura libre pero el turno se canta en cada uno: da igual dónde caiga
-     visualmente una tarjeta, el número dice a quién le toca. */
   .cola {
     list-style: none;
     margin: 0;
