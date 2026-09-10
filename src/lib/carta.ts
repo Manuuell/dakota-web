@@ -17,10 +17,31 @@ const catalogo = new Map<string, Producto>(
   )
 );
 
+export interface Adicion {
+  id: string;
+  nombre: string;
+  precio: number;
+}
+
+// Las adiciones se declaran por categoría, así que un plato solo puede llevar
+// las de la suya: pedir "quesudo" con una hamburguesa no es un precio raro, es
+// un plato que no existe.
+const adicionesPorProducto = new Map<string, Map<string, Adicion>>(
+  menu.categorias.flatMap((c) => {
+    const disponibles = new Map((c.adiciones ?? []).map((a) => [a.id, a as Adicion]));
+    return c.productos.map((p): [string, Map<string, Adicion>] => [p.id, disponibles]);
+  })
+);
+
+export function adicionesDe(productoId: string): Adicion[] {
+  return [...(adicionesPorProducto.get(productoId)?.values() ?? [])];
+}
+
 export interface LineaPedida {
   id: string;
   cantidad: number;
   conPapa?: boolean;
+  adiciones?: string[];
   nota?: string;
 }
 
@@ -29,9 +50,16 @@ export interface LineaResuelta {
   nombre: string;
   precioCop: number;
   conPapa: boolean;
+  adiciones: Adicion[];
   cantidad: number;
   nota?: string;
 }
+
+/** Lo que cuesta una unidad con todo lo que lleva encima. */
+export const precioUnidad = (l: LineaResuelta) =>
+  l.precioCop + l.adiciones.reduce((s, a) => s + a.precio, 0);
+
+export const precioLinea = (l: LineaResuelta) => precioUnidad(l) * l.cantidad;
 
 export class CartaError extends Error {}
 
@@ -55,7 +83,7 @@ export function resolverLineas(lineas: unknown): { items: LineaResuelta[]; total
   }
 
   const items = lineas.map((linea): LineaResuelta => {
-    const { id, cantidad, conPapa, nota } = (linea ?? {}) as LineaPedida;
+    const { id, cantidad, conPapa, adiciones, nota } = (linea ?? {}) as LineaPedida;
 
     const producto = catalogo.get(String(id));
     if (!producto) throw new CartaError(`No existe el producto "${id}".`);
@@ -74,13 +102,36 @@ export function resolverLineas(lineas: unknown): { items: LineaResuelta[]; total
       nombre: producto.nombre,
       precioCop: quierePapa ? producto.precioPapa! : producto.precio,
       conPapa: quierePapa,
+      adiciones: resolverAdiciones(producto, adiciones),
       cantidad,
       nota: nota?.trim().slice(0, MAX_NOTA) || undefined,
     };
   });
 
-  const totalCop = items.reduce((suma, i) => suma + i.precioCop * i.cantidad, 0);
+  const totalCop = items.reduce((suma, i) => suma + precioLinea(i), 0);
   return { items, totalCop };
+}
+
+function resolverAdiciones(producto: Producto, pedidas: unknown): Adicion[] {
+  if (pedidas === undefined || pedidas === null) return [];
+  if (!Array.isArray(pedidas)) throw new CartaError("Adiciones mal formadas.");
+
+  const disponibles = adicionesPorProducto.get(producto.id) ?? new Map();
+  const vistas = new Set<string>();
+
+  return pedidas.map((id) => {
+    const adicion = disponibles.get(String(id));
+    if (!adicion) {
+      throw new CartaError(`${producto.nombre} no admite la adición "${id}".`);
+    }
+    // Sin esto, mandar el mismo id diez veces cobraría diez quesudos por un
+    // plato que solo lleva uno.
+    if (vistas.has(adicion.id)) {
+      throw new CartaError(`"${adicion.nombre}" viene repetida.`);
+    }
+    vistas.add(adicion.id);
+    return adicion;
+  });
 }
 
 export const cop = (n: number) => "$" + new Intl.NumberFormat("es-CO").format(n);

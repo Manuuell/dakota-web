@@ -100,7 +100,9 @@ function aPedido(id: string, d: Record<string, unknown>): Pedido {
     mesaId: d.mesaId as string,
     mesaEtiqueta: d.mesaEtiqueta as string,
     estado: d.estado as Estado,
-    items: (d.items as LineaResuelta[]) ?? [],
+    // Los pedidos anteriores a las adiciones no traen el campo; se normaliza
+    // aquí para que nadie más abajo tenga que comprobarlo.
+    items: ((d.items as LineaResuelta[]) ?? []).map((i) => ({ ...i, adiciones: i.adiciones ?? [] })),
     totalCop: d.totalCop as number,
     nota: (d.nota as string) || undefined,
     pagado: Boolean(d.pagado),
