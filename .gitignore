@@ -5,6 +5,13 @@ dist/
 .DS_Store
 *.log
 .env
+.env.*
+!.env.example
+# clave de servicio de Firebase — nunca al repositorio
+*-service-account*.json
+
+# QR de mesas: los genera scripts/mesas.mjs y llevan el token dentro
+qr/
 
 # material de trabajo
 .claude/
